@@ -7,7 +7,7 @@
 */
 import * as L from "./leaflet-src.esm.js";
 import simpleheat from "./simpleheat.js";
-// import * as leaflet from "https://unpkg.com/leaflet/dist/leaflet-src.esm.js";
+// import * as L from "https://unpkg.com/leaflet/dist/leaflet-src.esm.js";
 
 'use strict';
 

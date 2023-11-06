@@ -1,7 +1,7 @@
 import * as L from "./leaflet-src.esm.js";
 import heatLayer from "./leaflet-heat.js";
 import PathList from "./path-list.js";
-// import * as leaflet from "https://unpkg.com/leaflet/dist/leaflet-src.esm.js";
+// import * as L from "https://unpkg.com/leaflet/dist/leaflet-src.esm.js";
 
 const coords = L.latLng(2.94575, 101.87513);
 /** @type{PathList} */
@@ -53,19 +53,11 @@ function add_point(event) {
   }
 }
 
-/**
- * Main function to execute.
- * */
-function main() {
-  const map = L.map("map").setView(coords, 19);
-  L.tileLayer('https:tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http:www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
+const map = L.map("map").setView(coords, 19);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 
-  draw_heatmap(map);
-  map.on("click", add_point);
-}
-
-// Adding event listener for when page loaded
-window.addEventListener("load", main);
+draw_heatmap(map);
+map.on("click", add_point);
