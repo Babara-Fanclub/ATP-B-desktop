@@ -4,13 +4,15 @@
   "description": "Frontend for Year 3 Group Project",
   "main": "",
   "scripts": {
-    "run": "npx vite"
+    "dev": "npx vite",
+    "build": "npx tsc && npx vite build",
+    "preview": "npx vite preview"
   },
   "author": "ecyht2",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "devDependencies": {
-    "eslint": "^8.51.0",
-    "vite": "^4.4.11"
+    "eslint": "^8.56.0",
+    "vite": "^5.0.8"
   }
 }
