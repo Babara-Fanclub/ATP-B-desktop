@@ -1,23 +1,24 @@
-import * as L from "./leaflet-src.esm.js";
-import heatLayer from "./leaflet-heat.js";
 import PathList from "./path-list.js";
-// import * as L from "https://unpkg.com/leaflet/dist/leaflet-src.esm.js";
+import * as maplibregl from "maplibre-gl/dist/maplibre-gl.js"
 
-const coords = L.latLng(2.94575, 101.87513);
+// 101.87513, 2.94575
 /** @type{PathList} */
 let point = null;
 
 /**
  * Draws the heatmap from the data base.
  *
- * @param map {L.Map} The map to draw the heatmap on.
+ * @param map {maplibregl.Map} The map to draw the heatmap on.
  * */
 function draw_heatmap(map) {
   // https://wiki.openstreetmap.org/wiki/Zoom_levels
   // https://stackoverflow.com/questions/27545098/leaflet-calculating-meters-per-pixel-at-zoom-level
   const meters_per_pixel = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI / 180)) / Math.pow(2, map.getZoom() + 8);
   const five_meters = 5 / meters_per_pixel;
-  const hm = heatLayer([], { radius: five_meters }).addTo(map);
+  const hm = map.addLayer({
+    id: "hm",
+    type: "heatmap"
+  });
 
   // Using Fake Data for now
   /**
@@ -53,11 +54,11 @@ function add_point(event) {
   }
 }
 
-const map = L.map("map").setView(coords, 19);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+const map = new maplibregl.Map({
+  container: 'map',
+  style: 'style.json', // stylesheet location
+  center: [101.87513, 2.94575], // starting position [lng, lat]
+  zoom: 10 // starting zoom
+});
 
-draw_heatmap(map);
-map.on("click", add_point);
+map.on("error", function () {})
