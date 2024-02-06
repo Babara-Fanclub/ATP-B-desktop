@@ -22,7 +22,9 @@
     "vite": "^5.0.8"
   },
   "dependencies": {
+    "@tauri-apps/api": "1.5.3",
     "maplibre-gl": "^3.6.2",
-    "pmtiles": "^2.11.0"
+    "pmtiles": "^2.11.0",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1"
   }
 }
