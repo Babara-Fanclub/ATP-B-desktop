@@ -53,17 +53,17 @@ impl TryFrom<GeoJson> for PathData {
         // Checking for version
         let foreign_members = features
             .foreign_members
-            .ok_or(String::from("Invalid Spec"))?;
+            .ok_or(String::from("Invalid Path GeoJSON: Missing Version"))?;
         let version = foreign_members
             .get("version")
-            .ok_or(String::from("Invalid Spec"))?
+            .ok_or(String::from("Invalid Path GeoJSON: Missing Version"))?
             .as_str()
-            .ok_or(String::from("Invalid Spec"))?;
+            .ok_or(String::from("Invalid Path GeoJSON: Invalid Version"))?;
 
         let features = features.features;
 
         if features.len() != 2 {
-            return Err(String::from("Invalid Spec"));
+            return Err(String::from("Invalid Path GeoJSON: Path GeoJSON requires two features (Multi Point and Line String)."));
         }
 
         // Extracting Geometries
@@ -71,13 +71,13 @@ impl TryFrom<GeoJson> for PathData {
             .into_iter()
             .map(|f| f.geometry)
             .collect::<Option<Vec<Geometry>>>()
-            .ok_or(String::from("Invalid Spec"))?;
+            .ok_or(String::from("Invalid Path GeoJSON: Path GeoJSON requires two features (Multi Point and Line String)."))?;
 
         // Extracting Path and Points
         let (path, points) = match (geometries.remove(0).value, geometries.remove(0).value) {
             (p @ Value::MultiPoint(_), l @ Value::LineString(_)) => (l, p),
             (l @ Value::LineString(_), p @ Value::MultiPoint(_)) => (l, p),
-            _ => return Err(String::from("Invalid Spec")),
+            _ => return Err(String::from("Invalid Path GeoJSON: Path GeoJSON requires two features (Multi Point and Line String).")),
         };
 
         Ok(Self {
@@ -131,7 +131,9 @@ impl<'de> Deserialize<'de> for PathData {
     where
         D: serde::Deserializer<'de>,
     {
-        GeoJson::deserialize(deserializer)?.try_into().map_err(de::Error::custom)
+        GeoJson::deserialize(deserializer)?
+            .try_into()
+            .map_err(de::Error::custom)
     }
 }
 
