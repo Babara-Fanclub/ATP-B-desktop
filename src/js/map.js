@@ -3,6 +3,7 @@
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import * as pmtiles from "pmtiles";
+import * as logging from "tauri-plugin-log-api";
 
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -14,6 +15,8 @@ export const map = new maplibregl.Map({
   zoom: 18, // starting zoom
 });
 
-map.on("error", function () {});
+map.on("error", function (e) {
+    logging.error(String(e));
+});
 
 export default map;
