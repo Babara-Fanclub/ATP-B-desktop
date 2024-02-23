@@ -15,7 +15,13 @@
       "all": false,
       "fs": {
         "readFile": true,
-        "scope": ["$APPDATA/*"]
+        "scope": [
+          "$APPDATA/*"
+        ]
+      },
+      "dialog": {
+        "open": true,
+        "save": true
       }
     },
     "bundle": {

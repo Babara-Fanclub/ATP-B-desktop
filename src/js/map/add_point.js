@@ -7,9 +7,31 @@ import { interpolate_points as interpolate } from "./interpolate";
 import { debug } from "tauri-plugin-log-api";
 import { invoke } from "@tauri-apps/api";
 
+/** PathData Geometry Type
+ * @typedef{{
+ *   type: ("MultiPoint" | "LineString"),
+ *   coordinates: Array<Array<Number>>,
+ * }} PathDataGeometry
+ */
+
+/** PathData Feature Type
+ * @typedef{{
+ *  type: "Feature",
+ *  geometry: PathDataGeometry,
+ * }} PathDataFeature
+ */
+
+/** Path Data Type
+ * @typedef {{
+ *  type: "FeatureCollection",
+ *  version: String,
+ *  features: Array<PathDataFeature>,
+ * }} PathData
+ */
+
 /** Reads the data path for saved path.
  *
- * @returns{Promise<GeoJSON>} The saved data or default.
+ * @returns{Promise<PathData>} The saved data or default.
  * */
 async function read_path() {
     try {
@@ -45,7 +67,7 @@ async function read_path() {
  *
  * @returns{Promise<null>} The saved data or default.
  * */
-function save_path() {
+export function save_path() {
     try {
         return invoke("save_path", { path: path_data });
     } catch (e) {
@@ -61,16 +83,16 @@ export let path_data = undefined;
 /** All the coordinates of the path.
  *
  * @type{[number, number]} */
-let line_coords = undefined;
+export let line_coords = undefined;
 /** All the coordinates where the robot will collect data.
  *
  * @type{[number, number]} */
-let point_coords = undefined;
+export let point_coords = undefined;
 
 /** Draggable markers to manipulate paths.
  *
  * @type{Array<Marker>} */
-const markers = [];
+export const markers = [];
 
 /** MaplibreJS source of the GEOJSON data.
  *
@@ -160,6 +182,10 @@ function marker_on_drag(event) {
     source.setData(path_data);
 
     debug(`Marker Moved to: ${new_coords.toString()}`);
+}
+/** Redraws the paths and collection points on the map. */
+export function redraw_path() {
+    source.setData(path_data);
 }
 
 /** Redraws all the markers on the map.

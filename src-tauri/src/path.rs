@@ -1,6 +1,11 @@
 //! States and function for working with robot paths.
 
-use std::{fmt::Display, io::{ErrorKind, Write}, str::FromStr};
+use std::{
+    fmt::Display,
+    io::{ErrorKind, Write},
+    path::PathBuf,
+    str::FromStr,
+};
 
 use geo_types::{LineString, MultiPoint};
 use geojson::{FeatureCollection, GeoJson, Geometry, Value};
@@ -47,10 +52,13 @@ impl TryFrom<GeoJson> for PathData {
     type Error = String;
 
     fn try_from(value: GeoJson) -> Result<Self, Self::Error> {
+        log::info!("Parsing Feature Collection");
         let features =
             FeatureCollection::try_from(value).map_err(|_| String::from("Invalid Spec"))?;
+        log::debug!("Feature Collection: {}", features);
 
         // Checking for version
+        log::info!("Checking Version");
         let foreign_members = features
             .foreign_members
             .ok_or(String::from("Invalid Path GeoJSON: Missing Version"))?;
@@ -59,26 +67,33 @@ impl TryFrom<GeoJson> for PathData {
             .ok_or(String::from("Invalid Path GeoJSON: Missing Version"))?
             .as_str()
             .ok_or(String::from("Invalid Path GeoJSON: Invalid Version"))?;
+        log::debug!("Version: {}", version);
 
+        log::info!("Extracting Features");
         let features = features.features;
-
         if features.len() != 2 {
             return Err(String::from("Invalid Path GeoJSON: Path GeoJSON requires two features (Multi Point and Line String)."));
         }
+        log::debug!("Features: {:?}", features);
 
         // Extracting Geometries
+        log::info!("Extracting Geometries");
         let mut geometries = features
             .into_iter()
             .map(|f| f.geometry)
             .collect::<Option<Vec<Geometry>>>()
             .ok_or(String::from("Invalid Path GeoJSON: Path GeoJSON requires two features (Multi Point and Line String)."))?;
+        log::debug!("Geometries: {:?}", geometries);
 
         // Extracting Path and Points
+        log::info!("Extracting Path and Points");
         let (path, points) = match (geometries.remove(0).value, geometries.remove(0).value) {
             (p @ Value::MultiPoint(_), l @ Value::LineString(_)) => (l, p),
             (l @ Value::LineString(_), p @ Value::MultiPoint(_)) => (l, p),
             _ => return Err(String::from("Invalid Path GeoJSON: Path GeoJSON requires two features (Multi Point and Line String).")),
         };
+        log::debug!("Path: {}", path);
+        log::debug!("Points: {}", points);
 
         Ok(Self {
             // We can safely unwrap as we know the values will work
@@ -138,37 +153,58 @@ impl<'de> Deserialize<'de> for PathData {
 }
 
 #[tauri::command]
-/// Read data from stored path.
+/// Read data from application storage.
 pub fn read_path(app_handle: AppHandle) -> Result<PathData, String> {
+    log::debug!("Reading Path");
     let mut data_dir = app_handle
         .path_resolver()
         .app_data_dir()
         .ok_or(String::from("Unable to Get App Data Directory"))?;
     data_dir.push("path.geojson");
+    log::debug!("Application GeoJSON Path: {}", data_dir.display());
 
-    let data = match file::read_string(data_dir) {
-        Ok(v) => PathData::from_str(&v)?,
-        Err(api::Error::Io(e)) => match e.kind() {
-            ErrorKind::NotFound => PathData::default(),
-            _ => return Err(e.to_string()),
-        },
-        Err(e) => return Err(e.to_string()),
-    };
-
-    Ok(data)
+    import_path(data_dir)
 }
 
 #[tauri::command]
-/// Save data from stored path.
+/// Import path data from the file system.
+pub fn import_path(import_path: PathBuf) -> Result<PathData, String> {
+    log::debug!("Importing from: {}", import_path.display());
+    Ok(match file::read_string(&import_path) {
+        Ok(v) => PathData::from_str(&v)?,
+        Err(api::Error::Io(e)) => match e.kind() {
+            ErrorKind::NotFound => {
+                log::warn!(
+                    "Unable to find Path: {}, using default PathData",
+                    import_path.display()
+                );
+                PathData::default()
+            }
+            _ => return Err(e.to_string()),
+        },
+        Err(e) => return Err(e.to_string()),
+    })
+}
+
+#[tauri::command]
+/// Export path data to the file system.
+pub fn export_path(export_path: PathBuf, path: PathData) -> Result<(), String> {
+    log::debug!("Exporting to: {}", export_path.display());
+    let mut file = std::fs::File::create(export_path).map_err(|e| e.to_string())?;
+    write!(file, "{}", path).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+/// Save data to application storage.
 pub fn save_path(app_handle: AppHandle, path: PathData) -> Result<(), String> {
+    log::debug!("Saving Path");
     let mut data_dir = app_handle
         .path_resolver()
         .app_data_dir()
         .ok_or(String::from("Unable to Get App Data Directory"))?;
     data_dir.push("path.geojson");
+    log::debug!("Application GeoJSON Path: {}", data_dir.display());
 
-    let mut file = std::fs::File::create(data_dir).map_err(|e| e.to_string())?;
-    write!(file, "{}", path).map_err(|e| e.to_string())?;
-
-    Ok(())
+    export_path(data_dir, path)
 }

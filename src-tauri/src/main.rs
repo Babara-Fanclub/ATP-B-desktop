@@ -7,7 +7,12 @@ use tauri_plugin_log::LogTarget;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![path::read_path, path::save_path])
+        .invoke_handler(tauri::generate_handler![
+            path::read_path,
+            path::save_path,
+            path::import_path,
+            path::export_path
+        ])
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])

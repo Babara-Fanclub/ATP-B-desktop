@@ -2,3 +2,4 @@
  * */
 import "./map";
 import "./map/add_point";
+import "./import_export";
