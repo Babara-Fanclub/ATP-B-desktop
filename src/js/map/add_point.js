@@ -181,6 +181,7 @@ export function redraw_markers() {
 
         if (marker !== undefined) {
             marker.setLngLat(location).addTo(map);
+            continue;
         }
 
         // Adding draggable markers
