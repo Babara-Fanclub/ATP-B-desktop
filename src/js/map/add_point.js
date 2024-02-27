@@ -1,7 +1,7 @@
 /** Functions and initialization for path manipulation on the map. */
 "use strict";
 
-import { map } from "../map";
+import { map, fit_bounds } from "../map";
 import { Marker } from "maplibre-gl";
 import { interpolate_points as interpolate } from "./interpolate";
 import { debug } from "tauri-plugin-log-api";
@@ -61,6 +61,9 @@ async function read_path() {
     }
     line_coords = path_data.features[1].geometry.coordinates;
     point_coords = path_data.features[0].geometry.coordinates;
+    if (line_coords.length > 0) {
+        fit_bounds(line_coords, 100);
+    }
 }
 
 /** Save the data path.

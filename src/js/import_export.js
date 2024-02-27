@@ -3,6 +3,7 @@ import * as logging from "tauri-plugin-log-api";
 import { invoke } from "@tauri-apps/api";
 import { open, save } from '@tauri-apps/api/dialog';
 import * as path_vars from "./map/add_point";
+import { fit_bounds } from "./map";
 
 /** Import Export Callback
  * @callback IECallback
@@ -121,6 +122,9 @@ async function import_path(file_path) {
 
         logging.info("Saving New Path");
         path_vars.save_path();
+
+        logging.info("Fitting to New Bounds");
+        fit_bounds(path_vars.line_coords);
     } catch (e) {
         logging.error(String(e));
         return
