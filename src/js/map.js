@@ -16,7 +16,7 @@ export const map = new maplibregl.Map({
 });
 
 map.on("error", function(e) {
-    logging.error(String(e));
+    logging.error(String(e.error.message));
 });
 
 /** Fit to the bounds of a coordinates array.
