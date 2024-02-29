@@ -4,7 +4,7 @@
 import { map, fit_bounds } from "../map";
 import { Marker } from "maplibre-gl";
 import { interpolate_points as interpolate } from "./interpolate";
-import { debug } from "tauri-plugin-log-api";
+import * as logging from "tauri-plugin-log-api";
 import { invoke } from "@tauri-apps/api";
 
 /** PathData Geometry Type
@@ -37,7 +37,7 @@ async function read_path() {
     try {
         path_data = await invoke("read_path");
     } catch (e) {
-        console.error(e);
+        logging.error(String(e));
         path_data = {
             "type": "FeatureCollection",
             "version": "0.1.0",
@@ -74,7 +74,7 @@ export function save_path() {
     try {
         return invoke("save_path", { path: path_data });
     } catch (e) {
-        console.error(e);
+        logging.error(String(e));
         return new Promise();
     }
 }
@@ -147,10 +147,10 @@ function source_loaded() {
     // Adding new point
     map.on("click", (event) => {
         const location = event.lngLat.toArray();
-        debug(`User Clicked: ${location.toString()}`);
+        logging.debug(`User Clicked: ${location.toString()}`);
 
         const source = map.getSource("path");
-        debug(`Source: ${source.toString()}`);
+        logging.debug(`Source: ${source.toString()}`);
 
         // Adding data to geoJSON
         line_coords.push(location);
@@ -161,7 +161,7 @@ function source_loaded() {
         add_marker(location);
         recalculate_points();
 
-        debug(`New Path: ${path_data.toString()}`);
+        logging.debug(`New Path: ${path_data.toString()}`);
         save_path();
     });
 };
@@ -176,15 +176,15 @@ function marker_on_drag(event) {
     // We should get a valid index here
     const marker_index = markers.indexOf(marker);
 
-    debug(`Marker Moved: ${marker}`);
-    debug(`Marker Index: ${marker_index.toString()}`);
+    logging.debug(`Marker Moved: ${marker}`);
+    logging.debug(`Marker Index: ${marker_index.toString()}`);
 
     const new_coords = marker.getLngLat().toArray();
     line_coords[marker_index] = new_coords;
     recalculate_points();
     source.setData(path_data);
 
-    debug(`Marker Moved to: ${new_coords.toString()}`);
+    logging.debug(`Marker Moved to: ${new_coords.toString()}`);
 }
 /** Redraws the paths and collection points on the map. */
 export function redraw_path() {
@@ -243,7 +243,7 @@ function recalculate_points() {
  * */
 function add_marker(location) {
     const marker_line_index = markers.length;
-    debug(`Line Marker Index: ${marker_line_index.toString()}`);
+    logging.debug(`Line Marker Index: ${marker_line_index.toString()}`);
 
     // Adding draggable markers
     const marker = new Marker({
