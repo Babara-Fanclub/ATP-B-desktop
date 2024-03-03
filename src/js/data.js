@@ -47,12 +47,17 @@ async function read_data() {
  *
  * @type{BoatData}
  * */
-let boat_data = undefined;
+export let boat_data = undefined;
+
+/** MaplibreJS source of the GEOJSON data.
+ *
+ * @type{import("maplibre-gl/dist/maplibre-gl.js").GeoJSONSource} */
+let source = undefined;
 
 map.once("load", async () => {
     await read_data();
     source_loaded();
-})
+});
 
 /** Callback function when the data is loaded. */
 function source_loaded() {
@@ -61,6 +66,7 @@ function source_loaded() {
         "type": "geojson",
         "data": boat_data
     });
+    source = map.getSource("boat-data");
 
     // Heatmap Layer
     map.addLayer(
@@ -192,4 +198,15 @@ function source_loaded() {
             }
         },
     );
+}
+
+/** Updates the data displayed.
+ *
+ * This function will mutate the boat_data variable.
+ *
+ * @param {BoatData} data The new BoatData to set to.
+ * */
+export function update_data(data) {
+    source.setData(data);
+    boat_data = data;
 }

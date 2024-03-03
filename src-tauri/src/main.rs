@@ -17,6 +17,8 @@ fn main() {
             data::save_data,
             data::import_data,
             data::export_data,
+            data::import_data_csv,
+            data::export_data_csv,
         ])
         .plugin(
             tauri_plugin_log::Builder::default()

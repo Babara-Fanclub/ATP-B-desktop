@@ -415,3 +415,42 @@ pub fn save_data(app_handle: AppHandle, data: BoatData) -> Result<(), String> {
 
     export_data(data_dir, data)
 }
+
+#[tauri::command]
+/// Export boat data in CSV format to the file system.
+pub fn export_data_csv(export_path: PathBuf, data: BoatData) -> Result<(), String> {
+    log::debug!("Exporting to: {}", export_path.display());
+    let mut writer = csv::Writer::from_path(export_path).map_err(|e| e.to_string())?;
+    for record in data.features {
+        let record = BoatDataFeatureCSV::from(record);
+        writer.serialize(record).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+/// Import boat data in CSV format from the file system.
+pub fn import_data_csv(import_path: PathBuf) -> Result<BoatData, String> {
+    log::debug!("Importing from: {}", import_path.display());
+    Ok(match file::read_string(&import_path) {
+        Ok(v) => BoatData {
+            version: String::from("0.1.0"),
+            features: csv::Reader::from_reader(v.as_bytes())
+                .deserialize::<BoatDataFeatureCSV>()
+                .map(|v| v.map(BoatDataFeature::from))
+                .collect::<Result<Vec<_>, csv::Error>>()
+                .map_err(|e| e.to_string())?,
+        },
+        Err(api::Error::Io(e)) => match e.kind() {
+            ErrorKind::NotFound => {
+                log::warn!(
+                    "Unable to find Path: {}, using default BoatData",
+                    import_path.display()
+                );
+                BoatData::default()
+            }
+            _ => return Err(e.to_string()),
+        },
+        Err(e) => return Err(e.to_string()),
+    })
+}

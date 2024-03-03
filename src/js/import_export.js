@@ -3,6 +3,7 @@ import * as logging from "tauri-plugin-log-api";
 import { invoke } from "@tauri-apps/api";
 import { open, save } from '@tauri-apps/api/dialog';
 import * as path_vars from "./map/add_point";
+import * as boat_vars from "./data";
 import { fit_bounds } from "./map";
 
 /** Import Export Callback
@@ -31,6 +32,29 @@ if (button_ep === null) {
     logging.error("Unable to Find Export Path Button");
 } else {
     button_ep.addEventListener("click", (event) => show_file_saver(event, export_path, "path.geojson"));
+}
+
+/** Import Data Element
+ * @type{HTMLInputElement | null}
+ * */
+const input_id = document.getElementById("import-data");
+
+if (input_id === null) {
+    logging.error("Unable to Find Import Data Input");
+} else {
+    const filter = input_id.accept.split(",").map((v) => v.trim().replace(/^./i, "")).filter((v) => !v.includes("/"));
+    input_id.addEventListener("click", (event) => show_file_picker(event, import_data, filter));
+}
+
+/** Export Path Element
+ * @type{HTMLButtonElement | null}
+ * */
+const button_ed = document.getElementById("export-data");
+
+if (button_ed === null) {
+    logging.error("Unable to Find Export Data Button");
+} else {
+    button_ed.addEventListener("click", (event) => show_file_saver(event, export_data, "data.csv"));
 }
 
 /** Find a feature from a GeoJSON feature collection.
@@ -144,5 +168,44 @@ async function export_path(file_path) {
     } catch (e) {
         logging.error(String(e));
         return
+    }
+}
+
+/** Function to import boat data into the application.
+ *
+ * TODO: Should we warn user about the deletion of the current progress?
+ * 
+ * @param {String} file_path The path to the data to import from.
+ */
+async function import_data(file_path) {
+    logging.debug(`Importing: ${file_path}`);
+
+    try {
+        logging.info("Reading Boat Data File");
+        /** @type{import("./data").BoatData} */
+        const new_path = await invoke("import_data_csv", { importPath: file_path });
+        logging.debug("New Data: " + JSON.stringify(new_path));
+
+        logging.info("Updating Boat Data");
+        boat_vars.update_data(new_path);
+    } catch (e) {
+        logging.error(String(e));
+        return;
+    }
+}
+
+/** Function to export boat data from the application.
+ * 
+ * @param {String} file_path The path to export to.
+ */
+async function export_data(file_path) {
+    logging.debug(`Exporting to: ${file_path}`);
+
+    try {
+        logging.info("Exporting Boat Data");
+        await invoke("export_data_csv", { data: boat_vars.boat_data, exportPath: file_path });
+    } catch (e) {
+        logging.error(String(e));
+        return;
     }
 }

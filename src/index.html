@@ -62,8 +62,8 @@
                 </button>
             </section>
             <section class="flex space-x-5">
-                <button
-                    class="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-blue-500 text-white flex items-center">
+                <label of="import-data"
+                    class="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-blue-500 text-white flex items-center cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="mr-2 h-5 w-5">
@@ -71,9 +71,13 @@
                         <polyline points="7 10 12 15 17 10"></polyline>
                         <line x1="12" x2="12" y1="15" y2="3"></line>
                     </svg>
-                    Load Data
-                </button>
+                    <input name="import-data" id="import-data"
+                        class="opacity-0 h-0 min-h-0 max-h-0 w-0 min-w-0 max-w-0 m-0" type="file"
+                        accept="text/csv,.csv">
+                    Import Data
+                </label>
                 <button
+                    id="export-data"
                     class="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-blue-500 text-white flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -82,7 +86,7 @@
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" x2="12" y1="3" y2="15"></line>
                     </svg>
-                    Save Data
+                    Export Data
                 </button>
             </section>
             <section class="space-y-4">
