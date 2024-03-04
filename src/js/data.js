@@ -210,3 +210,24 @@ export function update_data(data) {
     source.setData(data);
     boat_data = data;
 }
+
+/** The select element for filtering the layer.
+ * @type{HTMLSelectElement}
+ * */
+const filter_element = document.getElementById("display-layer");
+
+if (filter_element === null) {
+    logging.error("Unable to Find Display Layer Select");
+} else {
+    filter_element.addEventListener("input", update_filter);
+}
+
+/** Update the filter of the layer to display.
+ *
+ * @param {InputEvent} event The input event.
+ */
+function update_filter(event) {
+    const filter = ["==", "layer", event.target.value];
+    map.setFilter("boat-data-points", filter);
+    map.setFilter("boat-data-heat", filter);
+}
