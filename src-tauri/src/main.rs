@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod data;
 mod path;
 
 use tauri_plugin_log::LogTarget;
@@ -11,7 +12,13 @@ fn main() {
             path::read_path,
             path::save_path,
             path::import_path,
-            path::export_path
+            path::export_path,
+            data::read_data,
+            data::save_data,
+            data::import_data,
+            data::export_data,
+            data::import_data_csv,
+            data::export_data_csv,
         ])
         .plugin(
             tauri_plugin_log::Builder::default()

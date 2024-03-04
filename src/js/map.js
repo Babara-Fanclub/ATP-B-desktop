@@ -13,6 +13,8 @@ export const map = new maplibregl.Map({
     style: "style.json", // stylesheet location
     center: [101.87513, 2.94575], // starting position [lng, lat]
     zoom: 18, // starting zoom
+    maxZoom: 21,
+    minZoom: 10,
 });
 
 map.on("error", function(e) {
