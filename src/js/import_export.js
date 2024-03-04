@@ -188,6 +188,8 @@ async function import_data(file_path) {
 
         logging.info("Updating Boat Data");
         boat_vars.update_data(new_path);
+
+        await invoke("save_data", { data: boat_vars.boat_data });
     } catch (e) {
         logging.error(String(e));
         return;
