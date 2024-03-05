@@ -3,9 +3,9 @@
 
 import { map, fit_bounds } from "../map";
 import { Marker } from "maplibre-gl";
-import { interpolate_points as interpolate } from "./interpolate";
 import * as logging from "tauri-plugin-log-api";
 import { invoke } from "@tauri-apps/api";
+import { recalculate_points } from "./interpolate";
 
 /** PathData Geometry Type
  * @typedef{{
@@ -100,7 +100,7 @@ export const markers = [];
 /** MaplibreJS source of the GEOJSON data.
  *
  * @type{import("maplibre-gl/dist/maplibre-gl.js").GeoJSONSource} */
-let source = undefined;
+export let source = undefined;
 
 map.once("load", async () => {
     await read_path();
@@ -155,7 +155,6 @@ function source_loaded() {
         // Adding data to geoJSON
         line_coords.push(location);
         point_coords.push(location);
-        source.setData(path_data);
 
         // Adding marker
         add_marker(location);
@@ -163,6 +162,9 @@ function source_loaded() {
 
         logging.debug(`New Path: ${path_data.toString()}`);
         save_path();
+
+        logging.info("Updating UI");
+        source.setData(path_data);
     });
 }
 
@@ -186,6 +188,7 @@ function marker_on_drag(event) {
 
     logging.debug(`Marker Moved to: ${new_coords.toString()}`);
 }
+
 /** Redraws the paths and collection points on the map. */
 export function redraw_path() {
     source.setData(path_data);
@@ -222,18 +225,6 @@ export function redraw_markers() {
 
         markers[i].on("drag", marker_on_drag);
         markers[i].on("dragend", () => save_path());
-    }
-}
-
-/** Recalculate all the collection points.
- *
- * This function will mutate the point_coords variable.
- * */
-function recalculate_points() {
-    const new_values = interpolate(line_coords, 5);
-    point_coords.length = new_values.length;
-    for (const i in new_values) {
-        point_coords[i] = new_values[i];
     }
 }
 
