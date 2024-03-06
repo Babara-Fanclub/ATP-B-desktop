@@ -44,7 +44,7 @@ export function fit_bounds(coordinates, padding = 20) {
 
     map.fitBounds(bounds, {
         padding: padding
-    })
+    });
 }
 
 export default map;

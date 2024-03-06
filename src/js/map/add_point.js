@@ -105,7 +105,7 @@ let source = undefined;
 map.once("load", async () => {
     await read_path();
     source_loaded();
-})
+});
 
 function source_loaded() {
     // Adding path into data source
@@ -164,7 +164,7 @@ function source_loaded() {
         logging.debug(`New Path: ${path_data.toString()}`);
         save_path();
     });
-};
+}
 
 /** Callback function when a marker is dragged.
  *

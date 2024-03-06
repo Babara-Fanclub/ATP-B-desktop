@@ -66,7 +66,7 @@ if (button_ed === null) {
 function find_feature(features, type) {
     return features.find((/** @type{import("./map/add_point").PathDataFeature} */ element) =>
         element.geometry.type === type
-    )
+    );
 }
 
 /** Event listener for showing tauri file picker instead of browsers.
@@ -151,7 +151,7 @@ async function import_path(file_path) {
         fit_bounds(path_vars.line_coords);
     } catch (e) {
         logging.error(String(e));
-        return
+        return;
     }
 }
 
@@ -167,7 +167,7 @@ async function export_path(file_path) {
         await invoke("export_path", { path: path_vars.path_data, exportPath: file_path });
     } catch (e) {
         logging.error(String(e));
-        return
+        return;
     }
 }
 
