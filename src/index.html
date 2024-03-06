@@ -96,11 +96,15 @@
                 </select>
             </section>
             <section class="space-y-4">
-                <div class="flex items-center justify-between space-x-4">
-                    <label>Interpolate Distance: </label>
-                    <input min="3" max="10" class="w-1/4 text-center border-2 border-gray-300 rounded-md flex-1" type="number"
+                <div class="items-center justify-between space-x-4 flex">
+                    <input min="3" max="10" class="w-1/4 text-center border-2 border-gray-300 rounded-md flex-1"
+                        type="range" value="3" id="interpolate-range" />
+                    <input min="3" max="10" class="w-1/4 text-center border-2 border-gray-300 rounded-md" type="number"
                         value="3" id="interpolate-number" />
                 </div>
+                <button id="interpolate-button"
+                    class="whitespace-nowrap justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-black text-white flex items-center w-full">Generate
+                    Path</button>
             </section>
             <section class="flex justify-end">
                 <button

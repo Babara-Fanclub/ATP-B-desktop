@@ -4,6 +4,7 @@ import * as maplibregl from "maplibre-gl";
 import * as logging from "tauri-plugin-log-api";
 import * as path_vars from "./add_point";
 
+/** Current Distance for Path Interpolation. */
 export let current_distance = 3;
 
 /** Interates through elements pairwise.
@@ -120,10 +121,50 @@ function calculate_destination(from, brng, distance) {
  * @returns {Array<[number, number]>} An array with interpolated points.
  * */
 export function interpolate_points(points, distance) {
-    logging.info("Interpolating Points");
     const array = Array.from(pairwise(points)).flatMap(interpolate.bind(null, distance));
+    logging.info("Adding Back Initial Point");
     array.unshift(points[0]);
     return array;
+}
+
+/** Find the coordinate that is nearest to a target coordinate.
+ *
+ * @param {maplibregl.LngLat} target_point The reference point to measure the distance from .
+ * @param {Array<maplibregl.LngLat>} points The array of coordinates to compare to.
+ * @returns{Number} The index of the nearest coordinates.
+ */
+function find_closest(target_point, points) {
+    logging.info("Calculating Distances");
+    const distances = points.map((v) => target_point.distanceTo(v));
+
+    logging.info("Finding Index of Closet Point");
+    return distances.indexOf(Math.min(...distances));
+}
+
+/** Generates a path from an array of coordinates.
+ *
+ * The first coordinates in an array is used as the starting point.
+ *
+ * @param {Array<maplibregl.LngLat>} points The array of coordinates.
+ * @returns{Array<maplibregl.LngLat>} The generated path.
+ */
+function generate_path(points) {
+    if (points.length === 1) {
+        logging.info("Early Returning Last Point");
+        return points;
+    }
+
+    logging.info("Finding Closet Point");
+    // Adding one as we started from the second element
+    const closet_index = find_closest(points[0], points.slice(1)) + 1;
+
+    logging.info("Swapping Points");
+    const closest = points[closet_index];
+    points[closet_index] = points[1];
+    points[1] = closest;
+
+    logging.info("Recursing for all Points");
+    return [points[0]].concat(generate_path(points.slice(1)));
 }
 
 /** Input Number Element for Path Interpolation.
@@ -131,27 +172,59 @@ export function interpolate_points(points, distance) {
  * */
 const number_input = document.getElementById("interpolate-number");
 
+/** Input Range Element for Path Interpolation.
+ * @type{HTMLInputElement | null}
+ * */
+const range_input = document.getElementById("interpolate-range");
+
 if (number_input === null) {
     logging.error("Unable to Find Interpolate Number Input");
 } else {
-    number_input.addEventListener("click", (event) => {
+    number_input.addEventListener("input", (event) => {
         const value = event.target.value;
         current_distance = value;
-        recalculate_points();
-        path_vars.source.setData(path_vars.path_data);
+        range_input.value = value;
     });
 }
 
-/** Recalculate all the collection points.
- *
- * This function will mutate the point_coords variable.
- * */
-export function recalculate_points() {
-    const new_values = interpolate_points(path_vars.line_coords, current_distance);
-    path_vars.point_coords.length = new_values.length;
-    for (const i in new_values) {
-        path_vars.point_coords[i] = new_values[i];
-    }
+if (range_input === null) {
+    logging.error("Unable to Find Interpolate Range Input");
+} else {
+    range_input.addEventListener("input", (event) => {
+        const value = event.target.value;
+        current_distance = value;
+        number_input.value = value;
+    });
 }
 
-export default interpolate_points;
+/** Button Element to Generate Path.
+ * @type{HTMLButtonElement | null}
+ * */
+const generate_button = document.getElementById("interpolate-button");
+
+if (generate_button === null) {
+    logging.error("Unable to Find Generate Path Button");
+} else {
+    generate_button.addEventListener("click", () => {
+        logging.info("Generating Path");
+        const points = path_vars.markers.map((v) => v.getLngLat());
+        const new_path = generate_path(points).map((v) => v.toArray());
+        logging.debug(`Generated Path: ${JSON.stringify(new_path)}`);
+        path_vars.line_coords.splice(0, path_vars.line_coords.length, ...new_path);
+
+        logging.info("Interpolating Points");
+        const new_values = interpolate_points(path_vars.line_coords, current_distance);
+        path_vars.point_coords.length = new_values.length;
+        for (const i in new_values) {
+            path_vars.point_coords[i] = new_values[i];
+        }
+
+        logging.info("Updating UI");
+        path_vars.source.setData(path_vars.path_data);
+
+        logging.info("Saving Path");
+        path_vars.save_path();
+    });
+}
+
+export default { interpolate_points, generate_path };
