@@ -1,0 +1,5 @@
+An icon for a desktop application. The application is for interacting with a robot boat that collects temperature from water bodies.
+
+Seed: 155014015
+
+https://huggingface.co/spaces/playgroundai/playground-v2.5
