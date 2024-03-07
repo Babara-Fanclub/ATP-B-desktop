@@ -155,9 +155,9 @@ async function import_path(file_path) {
     }
 }
 
-/** Function to export path into the application.
+/** Function to export path of the application.
  * 
- * @param {String} file_path The path to the path to export to.
+ * @param {String} file_path The path to export to.
  */
 async function export_path(file_path) {
     logging.debug(`Exporting to: ${file_path}`);
