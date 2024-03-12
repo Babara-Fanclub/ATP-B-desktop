@@ -3,7 +3,6 @@
 
 import { map, fit_bounds } from "../map";
 import { Marker } from "maplibre-gl";
-import { interpolate_points as interpolate } from "./interpolate";
 import * as logging from "tauri-plugin-log-api";
 import { invoke } from "@tauri-apps/api";
 
@@ -100,7 +99,7 @@ export const markers = [];
 /** MaplibreJS source of the GEOJSON data.
  *
  * @type{import("maplibre-gl/dist/maplibre-gl.js").GeoJSONSource} */
-let source = undefined;
+export let source = undefined;
 
 map.once("load", async () => {
     await read_path();
@@ -147,48 +146,15 @@ function source_loaded() {
     // Adding new point
     map.on("click", (event) => {
         const location = event.lngLat.toArray();
-        logging.debug(`User Clicked: ${location.toString()}`);
+        logging.debug(`User Clicked: ${JSON.stringify(location)}`);
 
         const source = map.getSource("path");
-        logging.debug(`Source: ${source.toString()}`);
-
-        // Adding data to geoJSON
-        line_coords.push(location);
-        point_coords.push(location);
-        source.setData(path_data);
+        logging.debug(`Source: ${source.id}`);
 
         // Adding marker
+        logging.info("Adding new marker");
         add_marker(location);
-        recalculate_points();
-
-        logging.debug(`New Path: ${path_data.toString()}`);
-        save_path();
     });
-}
-
-/** Callback function when a marker is dragged.
- *
- * @param {import("maplibre-gl").MapLibreEvent} event The drag event emitted by the Marker.
- * */
-function marker_on_drag(event) {
-    /** @type{Marker} */
-    const marker = event.target;
-    // We should get a valid index here
-    const marker_index = markers.indexOf(marker);
-
-    logging.debug(`Marker Moved: ${marker}`);
-    logging.debug(`Marker Index: ${marker_index.toString()}`);
-
-    const new_coords = marker.getLngLat().toArray();
-    line_coords[marker_index] = new_coords;
-    recalculate_points();
-    source.setData(path_data);
-
-    logging.debug(`Marker Moved to: ${new_coords.toString()}`);
-}
-/** Redraws the paths and collection points on the map. */
-export function redraw_path() {
-    source.setData(path_data);
 }
 
 /** Redraws all the markers on the map.
@@ -219,21 +185,6 @@ export function redraw_markers() {
         })
             .setLngLat(location)
             .addTo(map);
-
-        markers[i].on("drag", marker_on_drag);
-        markers[i].on("dragend", () => save_path());
-    }
-}
-
-/** Recalculate all the collection points.
- *
- * This function will mutate the point_coords variable.
- * */
-function recalculate_points() {
-    const new_values = interpolate(line_coords, 5);
-    point_coords.length = new_values.length;
-    for (const i in new_values) {
-        point_coords[i] = new_values[i];
     }
 }
 
@@ -252,8 +203,6 @@ function add_marker(location) {
         .setLngLat(location)
         .addTo(map);
 
-    marker.on("drag", marker_on_drag);
-    marker.on("dragend", () => save_path());
     markers.push(marker);
 }
 
