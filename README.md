@@ -1,3 +1,3 @@
-# group-project-frontend
+# AWTC-R Desktop
 
-Frontend for Autonomous Water Temperature Collection Robot IoT.
+Desktop application for Autonomous Water Temperature Collection Robot (AWTC-R).
