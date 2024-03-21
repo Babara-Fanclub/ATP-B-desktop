@@ -19,15 +19,17 @@ use tauri::{
     AppHandle,
 };
 
-#[derive(Debug)]
 /// Data received from the boat in GeoJSON format.
 ///
 /// # Fields
 ///
 /// `version`: The version of the BoatData format.
 /// `features`: The data collected by the boat.
+#[derive(Debug)]
 pub struct BoatData {
+    /// The version of the communication protocol used.
     version: String,
+    /// The individual data point collected.
     features: Vec<BoatDataFeature>,
 }
 
@@ -159,7 +161,6 @@ impl<'de> Deserialize<'de> for BoatData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 /// The layer of the water body the data is collected from.
 ///
 /// # Variants
@@ -167,6 +168,7 @@ impl<'de> Deserialize<'de> for BoatData {
 /// `Surface`: The data is collected from the surface of the water body.
 /// `Middle`: The data is collected from the middle of the water body.
 /// `SeaBed`: The data is collected from the sea bed of the water body.
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 pub enum Layer {
     #[serde(rename = "surface")]
     /// The data is collected from the surface of the water body.
@@ -205,7 +207,6 @@ impl Display for Layer {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
 /// Individual temperature data received from the boat in GeoJSON format.
 ///
 /// # Fields
@@ -215,11 +216,17 @@ impl Display for Layer {
 /// `layer`: The layer of the water body the temperature is collected at.
 /// `time`: The date and time the temperature is collected.
 /// `geometry`: The coordinate the temperature is collected.
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct BoatDataFeature {
+    /// The temperature measured at the location.
     temperature: f64,
+    /// The depth the temperature is measured at.
     depth: f64,
+    /// The layer the temperature is measured at.
     layer: Layer,
+    /// The timestamp the temperature is measured at.
     time: DateTime<Utc>,
+    /// The location the temperature is measured at.
     #[serde(
         serialize_with = "serialize_geometry",
         deserialize_with = "deserialize_geometry"
@@ -289,7 +296,6 @@ impl From<&BoatDataFeature> for geojson::Feature {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
 /// Individual temperature data received from the boat in GeoJSON format.
 ///
 /// # Fields
@@ -300,13 +306,20 @@ impl From<&BoatDataFeature> for geojson::Feature {
 /// `time`: The date and time the temperature is collected.
 /// `lat`: The latitude of the coordinate the temperature is collected.
 /// `lng`: The longitude of the coordinate the temperature is collected.
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BoatDataFeatureCSV {
+    /// The temperature measured at the location.
     temperature: f64,
+    /// The depth the temperature is measured at.
     depth: f64,
+    /// The layer the temperature is measured at.
     layer: Layer,
+    /// The timestamp the temperature is measured at.
     #[serde(with = "chrono::serde::ts_milliseconds")]
     time: DateTime<Utc>,
+    /// The lattitude coordinate the temperature is measured at.
     lat: f64,
+    /// The longitude coordinate the temperature is measured at.
     lng: f64,
 }
 
@@ -359,8 +372,8 @@ impl From<&BoatDataFeatureCSV> for geojson::Feature {
     }
 }
 
-#[tauri::command]
 /// Read boat data from application storage.
+#[tauri::command]
 pub fn read_data(app_handle: AppHandle) -> Result<BoatData, String> {
     log::debug!("Reading Path");
     let mut data_dir = app_handle
@@ -373,8 +386,8 @@ pub fn read_data(app_handle: AppHandle) -> Result<BoatData, String> {
     import_data(data_dir)
 }
 
-#[tauri::command]
 /// Import boat data from the file system.
+#[tauri::command]
 pub fn import_data(import_path: PathBuf) -> Result<BoatData, String> {
     log::debug!("Importing from: {}", import_path.display());
     Ok(match file::read_string(&import_path) {
@@ -393,8 +406,8 @@ pub fn import_data(import_path: PathBuf) -> Result<BoatData, String> {
     })
 }
 
-#[tauri::command]
 /// Export boat data to the file system.
+#[tauri::command]
 pub fn export_data(export_path: PathBuf, data: BoatData) -> Result<(), String> {
     log::debug!("Exporting to: {}", export_path.display());
     let mut file = std::fs::File::create(export_path).map_err(|e| e.to_string())?;
@@ -402,8 +415,8 @@ pub fn export_data(export_path: PathBuf, data: BoatData) -> Result<(), String> {
     Ok(())
 }
 
-#[tauri::command]
 /// Save boat data to application storage.
+#[tauri::command]
 pub fn save_data(app_handle: AppHandle, data: BoatData) -> Result<(), String> {
     log::debug!("Saving Path");
     let mut data_dir = app_handle
@@ -416,8 +429,8 @@ pub fn save_data(app_handle: AppHandle, data: BoatData) -> Result<(), String> {
     export_data(data_dir, data)
 }
 
-#[tauri::command]
 /// Export boat data in CSV format to the file system.
+#[tauri::command]
 pub fn export_data_csv(export_path: PathBuf, data: BoatData) -> Result<(), String> {
     log::debug!("Exporting to: {}", export_path.display());
     let mut writer = csv::Writer::from_path(export_path).map_err(|e| e.to_string())?;
@@ -428,8 +441,8 @@ pub fn export_data_csv(export_path: PathBuf, data: BoatData) -> Result<(), Strin
     Ok(())
 }
 
-#[tauri::command]
 /// Import boat data in CSV format from the file system.
+#[tauri::command]
 pub fn import_data_csv(import_path: PathBuf) -> Result<BoatData, String> {
     log::debug!("Importing from: {}", import_path.display());
     Ok(match file::read_string(&import_path) {
