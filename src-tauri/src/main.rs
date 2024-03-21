@@ -3,6 +3,7 @@
 
 mod data;
 mod path;
+mod comm_proto;
 
 use tauri_plugin_log::LogTarget;
 

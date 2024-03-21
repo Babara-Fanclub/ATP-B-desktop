@@ -27,6 +27,23 @@ pub struct PathData {
     collection_points: MultiPoint<f64>,
 }
 
+impl PathData {
+    /// Gets the version of the communication protocol used.
+    pub fn version(&self) -> &str {
+        &self.version
+    }
+    
+    /// Gets the path the robot boat is following.
+    pub fn path(&self) -> &LineString<f64> {
+        &self.path
+    }
+    
+    /// Gets the coordinates to where the data should be collected.
+    pub fn collection_points(&self) -> &MultiPoint<f64> {
+        &self.collection_points
+    }
+}
+
 impl Default for PathData {
     fn default() -> Self {
         Self {

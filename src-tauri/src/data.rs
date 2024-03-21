@@ -33,6 +33,18 @@ pub struct BoatData {
     features: Vec<BoatDataFeature>,
 }
 
+impl BoatData {
+    /// Gets the version of the communication protocol used.
+    pub fn version(&self) -> &str {
+        &self.version
+    }
+
+    /// Gets the individual data point collected.
+    pub fn features(&self) -> &[BoatDataFeature] {
+        &self.features
+    }
+}
+
 impl Default for BoatData {
     /// Default `BoatData`.
     ///
@@ -232,6 +244,33 @@ pub struct BoatDataFeature {
         deserialize_with = "deserialize_geometry"
     )]
     geometry: Point<f64>,
+}
+
+impl BoatDataFeature {
+    /// Gets the temperature measured at the location.
+    pub fn temperature(&self) -> f64 {
+        self.temperature
+    }
+    
+    /// Gets the depth the temperature is measured at.
+    pub fn depth(&self) -> f64 {
+        self.depth
+    }
+    
+    /// Gets the layer the temperature is measured at.
+    pub fn layer(&self) -> Layer {
+        self.layer
+    }
+    
+    /// Gets the timestamp the temperature is measured at.
+    pub fn time(&self) -> DateTime<Utc> {
+        self.time
+    }
+    
+    /// Gets the location the temperature is measured at.
+    pub fn geometry(&self) -> Point<f64> {
+        self.geometry
+    }
 }
 
 impl From<BoatDataFeatureCSV> for BoatDataFeature {

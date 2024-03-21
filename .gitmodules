@@ -1,0 +1,3 @@
+[submodule "communication-protocol"]
+	path = src-tauri/communication-protocol
+	url = https://github.com/Babara-Fanclub/communication-protocol.git
