@@ -9,5 +9,10 @@
     "6080": {
       "label": "desktop"
     }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["vscodevim.vim"]
+    }
   }
 }
