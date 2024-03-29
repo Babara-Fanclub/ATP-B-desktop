@@ -25,7 +25,7 @@ use tauri::{
 ///
 /// `version`: The version of the BoatData format.
 /// `features`: The data collected by the boat.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BoatData {
     /// The version of the communication protocol used.
     version: String,
@@ -173,6 +173,23 @@ impl<'de> Deserialize<'de> for BoatData {
     }
 }
 
+impl TryFrom<crate::comm_proto::babara_project::data::BoatData> for BoatData {
+    type Error = String;
+
+    fn try_from(
+        value: crate::comm_proto::babara_project::data::BoatData,
+    ) -> Result<Self, Self::Error> {
+        Ok(Self {
+            version: value.version,
+            features: value
+                .features
+                .into_iter()
+                .map(BoatDataFeature::try_from)
+                .collect::<Result<Vec<BoatDataFeature>, String>>()?,
+        })
+    }
+}
+
 /// The layer of the water body the data is collected from.
 ///
 /// # Variants
@@ -219,6 +236,16 @@ impl Display for Layer {
     }
 }
 
+impl From<crate::comm_proto::babara_project::data::boat_data::Layer> for Layer {
+    fn from(value: crate::comm_proto::babara_project::data::boat_data::Layer) -> Self {
+        match value {
+            crate::comm_proto::babara_project::data::boat_data::Layer::Surface => Self::Surface,
+            crate::comm_proto::babara_project::data::boat_data::Layer::Middle => Self::Middle,
+            crate::comm_proto::babara_project::data::boat_data::Layer::SeaBed => Self::SeaBed,
+        }
+    }
+}
+
 /// Individual temperature data received from the boat in GeoJSON format.
 ///
 /// # Fields
@@ -251,22 +278,22 @@ impl BoatDataFeature {
     pub fn temperature(&self) -> f64 {
         self.temperature
     }
-    
+
     /// Gets the depth the temperature is measured at.
     pub fn depth(&self) -> f64 {
         self.depth
     }
-    
+
     /// Gets the layer the temperature is measured at.
     pub fn layer(&self) -> Layer {
         self.layer
     }
-    
+
     /// Gets the timestamp the temperature is measured at.
     pub fn time(&self) -> DateTime<Utc> {
         self.time
     }
-    
+
     /// Gets the location the temperature is measured at.
     pub fn geometry(&self) -> Point<f64> {
         self.geometry
@@ -297,6 +324,34 @@ impl From<&BoatDataFeatureCSV> for BoatDataFeature {
             depth: value.depth,
             layer: value.layer,
         }
+    }
+}
+
+impl TryFrom<crate::comm_proto::babara_project::data::boat_data::BoatDataFeature>
+    for BoatDataFeature
+{
+    type Error = String;
+
+    fn try_from(
+        value: crate::comm_proto::babara_project::data::boat_data::BoatDataFeature,
+    ) -> Result<Self, String> {
+        let timestamp: std::time::SystemTime = value
+            .time
+            .clone()
+            .ok_or(String::from("There is not time value"))?
+            .try_into()
+            .map_err(|e: prost_types::TimestampError| e.to_string())?;
+        let geometry = value
+            .geometry
+            .clone()
+            .ok_or(String::from("There is no geometry value"))?;
+        Ok(Self {
+            temperature: value.temperature,
+            depth: value.depth,
+            layer: value.layer().into(),
+            time: timestamp.into(),
+            geometry: Point::new(geometry.longitude, geometry.latitude),
+        })
     }
 }
 
