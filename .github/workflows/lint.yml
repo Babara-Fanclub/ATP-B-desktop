@@ -29,8 +29,6 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint .
-          --config eslint.config.js
-          --ext .js,.jsx,.ts,.tsx
 
   clippy:
     name: Checking Rust using Clippy
