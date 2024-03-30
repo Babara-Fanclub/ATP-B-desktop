@@ -25,23 +25,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install ESLint
-        run: |
-          npm install eslint@8.10.0
-          npm install @microsoft/eslint-formatter-sarif@2.1.7
+        run: npm install --dev
 
       - name: Run ESLint
         run: npx eslint .
-          --config .eslintrc.js
-          --ext .js,.jsx,.ts,.tsx
-          --format @microsoft/eslint-formatter-sarif
-          --output-file eslint-results.sarif
-        continue-on-error: true
 
-      - name: Upload analysis results to GitHub
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: eslint-results.sarif
-          wait-for-processing: true
   clippy:
     name: Checking Rust using Clippy
     runs-on: ubuntu-latest
@@ -51,3 +39,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Installing Dependencies
+        run: |
+          sudo apt update
+          sudo apt install libwebkit2gtk-4.0-dev \
+              build-essential \
+              curl \
+              wget \
+              file \
+              libssl-dev \
+              libgtk-3-dev \
+              libayatana-appindicator3-dev \
+              librsvg2-dev
+      - name: Run Clippy
+        run: |
+          cd src-tauri/
+          cargo clippy
