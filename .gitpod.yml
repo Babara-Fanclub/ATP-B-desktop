@@ -17,8 +17,14 @@ vscode:
     - "rust-lang.rust-analyzer"
     - "vscodevim.vim"
 
+ports:
+  - name: VNC
+    description: Full GUI Virtual Desktop
+    port: 6080
+    onOpen: open-browser
+
 tasks:
   - init: npm install && npm run build
-    command: npm run dev
+    command: npm run tauri-dev
 
 
