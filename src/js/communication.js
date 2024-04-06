@@ -1,6 +1,6 @@
 /** Communication Logic with the Boat. */
 import { invoke } from "@tauri-apps/api";
-import { emit, listen } from "@tauri-apps/api/event";
+import { listen } from "@tauri-apps/api/event";
 import * as logging from "tauri-plugin-log-api";
 
 import * as boat_vars from "./data";
@@ -26,7 +26,7 @@ if (run_button === null) {
         } catch (e) {
             logging.error(e);
         }
-    })
+    });
 }
 
 /** The current connected port.

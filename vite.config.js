@@ -1,3 +1,5 @@
+import * as process from "process";
+
 export default {
   root: "./src",
   // prevent vite from obscuring rust errors
@@ -17,4 +19,4 @@ export default {
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
   }
-}
+};
