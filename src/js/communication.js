@@ -16,7 +16,7 @@ const connected_status = `
                     </svg>
                     <span>Connected</span>
                 </div>
-            </div>`
+            </div>`;
 
 const disconnected_status = `
             <div class="flex items-center justify-between bg-red-500 text-white p-2">
@@ -30,7 +30,7 @@ const disconnected_status = `
                     </svg>
                     <span>Disconnected</span>
                 </div>
-            </div>`
+            </div>`;
 
 /** Run Element
  * @type{HTMLButtonElement | null}
