@@ -6,6 +6,32 @@ import * as logging from "tauri-plugin-log-api";
 import * as boat_vars from "./data";
 import * as path_vars from "./map/add_point";
 
+const connected_status = `
+            <div class="flex items-center justify-between bg-green-500 text-white p-2">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="h-4 w-4">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Connected</span>
+                </div>
+            </div>`
+
+const disconnected_status = `
+            <div class="flex items-center justify-between bg-red-500 text-white p-2">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="h-4 w-4">
+                        <path
+                            d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z">
+                        </path>
+                    </svg>
+                    <span>Disconnected</span>
+                </div>
+            </div>`
+
 /** Run Element
  * @type{HTMLButtonElement | null}
  * */
@@ -29,6 +55,15 @@ if (run_button === null) {
     });
 }
 
+/** Status Bar Element
+ * @type{HTMLDivElement | null}
+ * */
+const status_bar = document.getElementById("status-bar");
+
+if (status_bar === null) {
+    logging.error("Unable to Find Status Bar Element");
+}
+
 /** The current connected port.
  * 
  * @type{string}
@@ -46,7 +81,7 @@ async function search_port() {
             // Taking the first port
             // TODO: Handle multiple ports
             port = ports[0];
-            run_button.disabled = false;
+            update_ui(true);
             return;
         }
     } catch (e) {
@@ -72,8 +107,18 @@ listen("received-data", async (event) => {
 listen("disconnected", async (event) => {
     logging.info("Port Disconnected");
     if (event.payload === port) {
-        port = null;
-        run_button.disabled = true;
+        update_ui(false);
         search_port();
     }
 });
+
+function update_ui(connection) {
+    if (connection === true) {
+        run_button.disabled = false;
+        status_bar.innerHTML = connected_status;
+    } else {
+        port = null;
+        status_bar.innerHTML = disconnected_status;
+        run_button.disabled = true;
+    }
+}
