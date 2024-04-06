@@ -16,11 +16,32 @@ use tauri::{
     AppHandle,
 };
 
+/// Information on where to collect data for the boat.
 #[derive(Debug)]
 pub struct PathData {
+    /// The version of the communication protocol used.
     version: String,
+    /// The path the robot boat is following.
     path: LineString<f64>,
+    /// The coordinates to where the data should be collected.
     collection_points: MultiPoint<f64>,
+}
+
+impl PathData {
+    /// Gets the version of the communication protocol used.
+    pub fn version(&self) -> &str {
+        &self.version
+    }
+    
+    /// Gets the path the robot boat is following.
+    pub fn path(&self) -> &LineString<f64> {
+        &self.path
+    }
+    
+    /// Gets the coordinates to where the data should be collected.
+    pub fn collection_points(&self) -> &MultiPoint<f64> {
+        &self.collection_points
+    }
 }
 
 impl Default for PathData {
@@ -152,8 +173,8 @@ impl<'de> Deserialize<'de> for PathData {
     }
 }
 
-#[tauri::command]
 /// Read data from application storage.
+#[tauri::command]
 pub fn read_path(app_handle: AppHandle) -> Result<PathData, String> {
     log::debug!("Reading Path");
     let mut data_dir = app_handle
@@ -166,8 +187,8 @@ pub fn read_path(app_handle: AppHandle) -> Result<PathData, String> {
     import_path(data_dir)
 }
 
-#[tauri::command]
 /// Import path data from the file system.
+#[tauri::command]
 pub fn import_path(import_path: PathBuf) -> Result<PathData, String> {
     log::debug!("Importing from: {}", import_path.display());
     Ok(match file::read_string(&import_path) {
@@ -186,8 +207,8 @@ pub fn import_path(import_path: PathBuf) -> Result<PathData, String> {
     })
 }
 
-#[tauri::command]
 /// Export path data to the file system.
+#[tauri::command]
 pub fn export_path(export_path: PathBuf, path: PathData) -> Result<(), String> {
     log::debug!("Exporting to: {}", export_path.display());
     let mut file = std::fs::File::create(export_path).map_err(|e| e.to_string())?;
@@ -195,8 +216,8 @@ pub fn export_path(export_path: PathBuf, path: PathData) -> Result<(), String> {
     Ok(())
 }
 
-#[tauri::command]
 /// Save data to application storage.
+#[tauri::command]
 pub fn save_path(app_handle: AppHandle, path: PathData) -> Result<(), String> {
     log::debug!("Saving Path");
     let mut data_dir = app_handle
