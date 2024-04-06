@@ -24,7 +24,7 @@ ports:
     onOpen: open-browser
 
 tasks:
-  - init: npm install && npm run build
+  - init: npm install && npm run build && cd src-tauri && cargo build
     command: npm run tauri-dev
 
 
