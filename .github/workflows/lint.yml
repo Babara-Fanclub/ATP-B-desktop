@@ -55,9 +55,9 @@ jobs:
               libayatana-appindicator3-dev \
               librsvg2-dev
           # Serial Packages
-          sudo apt install -y libudev-dev && \
+          sudo apt install -y libudev-dev
           # Protobuf Packages
-          sudo apt install -y protobuf-compiler && \
+          sudo apt install -y protobuf-compiler
       - name: Run Clippy
         run: |
           cd src-tauri/
