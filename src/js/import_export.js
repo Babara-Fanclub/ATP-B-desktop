@@ -141,7 +141,7 @@ async function import_path(file_path) {
         path_vars.point_coords.splice(0, path_vars.point_coords.length, ...new_points.geometry.coordinates);
 
         logging.info("Redrawing Map");
-        path_vars.redraw_path();
+        path_vars.source.setData(path_vars.path_data);
         path_vars.redraw_markers();
 
         logging.info("Saving New Path");
