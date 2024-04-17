@@ -28,7 +28,7 @@ map.on("error", function(e) {
  * @param {maplibregl.Coordinates[]} coordinates Geographic coordinates of the boundary.
  * @param {Number?} padding The padding to the boundary.
  */
-export function fit_bounds(coordinates, padding = 20) {
+export function fit_bounds(coordinates, padding = 50) {
     logging.debug("In fit_bounds");
     logging.debug("Coordinates: " + "[" + coordinates) + "]";
     logging.debug("Padding: " + padding);

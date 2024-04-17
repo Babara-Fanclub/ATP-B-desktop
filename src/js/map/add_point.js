@@ -5,6 +5,8 @@ import { map, fit_bounds } from "../map";
 import { Marker } from "maplibre-gl";
 import * as logging from "tauri-plugin-log-api";
 import { invoke } from "@tauri-apps/api";
+import start_icon from "../../icons/start-point.png";
+import end_icon from "../../icons/end-point.png";
 
 /** PathData Geometry Type
  * @typedef{{
@@ -27,6 +29,16 @@ import { invoke } from "@tauri-apps/api";
  *  features: Array<PathDataFeature>,
  * }} PathData
  */
+
+const start_image = document.createElement("img");
+start_image.src = start_icon;
+start_image.style.translate = "0px 5px";
+start_image.width = 100;
+
+const end_image = document.createElement("img");
+end_image.src = end_icon;
+end_image.style.translate = "12px -10px";
+end_image.width = 80;
 
 /** Reads the data path for saved path.
  *
@@ -171,20 +183,21 @@ export function redraw_markers() {
     markers.length = line_coords.length;
 
     // Mapping new data
-    for (const [i, marker] of markers.entries()) {
+    for (const i of markers.keys()) {
         const location = line_coords[i];
-
-        if (marker !== undefined) {
-            marker.setLngLat(location).addTo(map);
-            continue;
-        }
 
         // Adding draggable markers
         markers[i] = new Marker({
-            draggable: true
+            draggable: true,
         })
             .setLngLat(location)
             .addTo(map);
+    }
+    if (markers.length > 1) {
+        const start = markers[0].getElement();
+        start.replaceChildren(start_image);
+        const end = markers[markers.length - 1].getElement();
+        end.replaceChildren(end_image);
     }
 }
 

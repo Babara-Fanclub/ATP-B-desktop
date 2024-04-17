@@ -221,6 +221,7 @@ if (generate_button === null) {
 
         logging.info("Updating UI");
         path_vars.source.setData(path_vars.path_data);
+        path_vars.redraw_markers();
 
         logging.info("Saving Path");
         path_vars.save_path();
