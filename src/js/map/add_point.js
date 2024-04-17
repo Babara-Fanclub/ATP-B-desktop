@@ -167,7 +167,6 @@ function source_loaded() {
         logging.info("Adding new marker");
         const marker = create_marker(location);
         markers.push(marker);
-        line_coords.push(location);
     });
 }
 
@@ -194,7 +193,6 @@ function create_marker(location) {
     marker.getElement().addEventListener("contextmenu", (e) => {
         if (e.button === 2) {
             const index = markers.findIndex((m) => m === marker);
-            line_coords.splice(index, 1);
             markers[index].remove();
             markers.splice(index, 1);
         }
