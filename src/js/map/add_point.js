@@ -110,7 +110,7 @@ export const markers = [];
 
 /** MaplibreJS source of the GEOJSON data.
  *
- * @type{import("maplibre-gl/dist/maplibre-gl.js").GeoJSONSource} */
+ * @type{import("maplibre-gl").GeoJSONSource} */
 export let source = undefined;
 
 map.once("load", async () => {
@@ -165,11 +165,42 @@ function source_loaded() {
 
         // Adding marker
         logging.info("Adding new marker");
-        add_marker(location);
+        const marker = create_marker(location);
+        markers.push(marker);
     });
 }
 
-/** Redraws all the markers on the map.
+/** 
+ * Creates a new marker for the map.
+ *
+ * @param {import("maplibre-gl").LngLatLike} location - The location of the marker.
+ * @returns {import("maplibre-gl").Marker} The created marker.
+ *
+ * @example
+ * ```javascript
+ * const location = [37.7749, -122.4194];
+ * const marker = create_marker(location);
+ * ```
+ */
+function create_marker(location) {
+    const marker = new Marker({
+        draggable: true
+    })
+        .setLngLat(location)
+        .addTo(map);
+
+    marker.getElement().addEventListener("contextmenu", (e) => {
+        if (e.button === 2) {
+            const index = markers.findIndex((m) => m === marker);
+            markers[index].remove();
+            markers.splice(index, 1);
+        }
+    });
+    return marker;
+}
+
+/** 
+ * Redraws all the markers on the map.
  *
  * This function will mutate the markers variable.
  * */
@@ -187,36 +218,15 @@ export function redraw_markers() {
         const location = line_coords[i];
 
         // Adding draggable markers
-        markers[i] = new Marker({
-            draggable: true,
-        })
-            .setLngLat(location)
-            .addTo(map);
+        markers[i] = create_marker(location);
     }
+
     if (markers.length > 1) {
         const start = markers[0].getElement();
         start.replaceChildren(start_image);
         const end = markers[markers.length - 1].getElement();
         end.replaceChildren(end_image);
     }
-}
-
-/** Addas a new marker to the map.
- *
- * @param {import("maplibre-gl/dist/maplibre-gl.js").LngLatLike} location The location of the new marker.
- * */
-function add_marker(location) {
-    const marker_line_index = markers.length;
-    logging.debug(`Line Marker Index: ${marker_line_index.toString()}`);
-
-    // Adding draggable markers
-    const marker = new Marker({
-        draggable: true
-    })
-        .setLngLat(location)
-        .addTo(map);
-
-    markers.push(marker);
 }
 
 export default path_data;
