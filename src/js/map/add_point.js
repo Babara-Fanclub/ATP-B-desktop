@@ -171,16 +171,15 @@ function source_loaded() {
 }
 
 /** 
- * Creates a new marker at the given location.
+ * Creates a new marker for the map.
  *
- * @param {number} index - The index of the marker.
  * @param {import("maplibre-gl").LngLatLike} location - The location of the marker.
  * @returns {import("maplibre-gl").Marker} The created marker.
  *
  * @example
  * ```javascript
  * const location = [37.7749, -122.4194];
- * const marker = create_marker(0, location);
+ * const marker = create_marker(location);
  * ```
  */
 function create_marker(location) {
