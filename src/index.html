@@ -10,7 +10,7 @@
 <body class="m-0 p-0 h-full">
     <main class="h-full flex">
         <div id="map" class="h-full grow"></div>
-        <div class="mx-5 space-y-5">
+        <div class="mx-5 gap-5 flex flex-col">
             <section id="status-bar">
                 <div class="flex items-center justify-between bg-red-500 text-white p-2">
                     <div class="flex items-center gap-2">
@@ -109,6 +109,42 @@
                     </svg>
                     <span>Run</span>
                 </button>
+            </section>
+            <section class="mt-auto">
+                <table class="border border-collapse w-full">
+                    <thead>
+                        <tr class="border">
+                            <th class="border">Temperature Range (&deg;C)</th>
+                            <th class="border">Colour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border">
+                            <td class="border">&le; 7</td>
+                            <td class="border">Transparent</td>
+                        </tr>
+                        <tr class="border">
+                            <td class="border">8 - 15</td>
+                            <td class="border bg-[rgb(103,169,207)] text-[rgb(103,169,207)]">Blue</td>
+                        </tr>
+                        <tr class="border">
+                            <td class="border">16 - 23</td>
+                            <td class="border bg-[rgb(209,229,240)] text-[rgb(209,229,240)]">Light Blue</td>
+                        </tr>
+                        <tr class="border">
+                            <td class="border">24 - 31</td>
+                            <td class="border bg-[rgb(253,219,199)] text-[rgb(253,219,199)]">White/Peach</td>
+                        </tr>
+                        <tr class="border">
+                            <td class="border">32 - 39</td>
+                            <td class="border bg-[rgb(239,138,98)] text-[rgb(239,138,98)]">Orange</td>
+                        </tr>
+                        <tr class="border">
+                            <td class="border">&ge; 40</td>
+                            <td class="border bg-[rgb(178,24,43)] text-[rgb(178,24,43)]">Red</td>
+                        </tr>
+                    </tbody>
+                </table>
             </section>
         </div>
     </main>
