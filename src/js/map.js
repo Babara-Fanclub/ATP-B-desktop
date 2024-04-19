@@ -47,4 +47,7 @@ export function fit_bounds(coordinates, padding = 50) {
     });
 }
 
+const scale = new maplibregl.ScaleControl();
+map.addControl(scale);
+
 export default map;
