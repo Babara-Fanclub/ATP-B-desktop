@@ -12,7 +12,7 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": ["vscodevim.vim"]
+      "extensions": ["bradlc.vscode-tailwindcss", "esbenp.prettier-vscode"]
     }
   }
 }

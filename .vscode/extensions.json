@@ -7,7 +7,9 @@
 		"vadimcn.vscode-lldb",
 		"serayuzgur.crates",
 		"tamasfe.even-better-toml",
-		"rust-lang.rust-analyzer"
+		"rust-lang.rust-analyzer",
+		"bradlc.vscode-tailwindcss",
+		"esbenp.prettier-vscode"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": [
