@@ -36,9 +36,9 @@ async function read_data() {
     } catch (e) {
         logging.error(String(e));
         boat_data = {
-            "type": "FeatureCollection",
-            "version": "0.1.0",
-            "features": []
+            type: "FeatureCollection",
+            version: "0.1.0",
+            features: [],
         };
     }
 }
@@ -63,141 +63,137 @@ map.once("load", async () => {
 function source_loaded() {
     // Adding boat data into data source
     map.addSource("boat-data", {
-        "type": "geojson",
-        "data": boat_data
+        type: "geojson",
+        data: boat_data,
     });
     source = map.getSource("boat-data");
 
     // Heatmap Layer
-    map.addLayer(
-        {
-            "id": "boat-data-heat",
-            "type": "heatmap",
-            "source": "boat-data",
-            "filter": ["==", "layer", "sea bed"],
-            "paint": {
-                // Increase the heatmap weight based on temperature
-                // TODO: Make settings for min and max range
-                "heatmap-weight": [
-                    "interpolate",
-                    ["linear"],
-                    ["get", "temperature"],
-                    0,
-                    0,
-                    40,
-                    1
-                ],
-                // Increase the heatmap color weight weight by zoom level
-                // heatmap-intensity is a multiplier on top of heatmap-weight
-                "heatmap-intensity": [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    10,
-                    0,
-                    21,
-                    1
-                ],
-                // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-                // Begin color ramp at 0-stop with a 0-transparancy color
-                "heatmap-color": [
-                    "interpolate",
-                    ["linear"],
-                    ["heatmap-density"],
-                    0,
-                    "rgba(33,102,172,0)",
-                    0.17,
-                    "rgb(103,169,207)",
-                    0.33,
-                    "rgb(209,229,240)",
-                    0.67,
-                    "rgb(253,219,199)",
-                    0.83,
-                    "rgb(239,138,98)",
-                    1,
-                    "rgb(178,24,43)"
-                ],
-                // to create a blur-like effect.
-                // Adjust the heatmap radius by zoom level
-                // TODO: Dynamically change this based on point distances
-                "heatmap-radius": [
-                    "interpolate",
-                    ["exponential", 2],
-                    ["zoom"],
-                    10,
-                    0,
-                    21,
-                    6 / 0.037
-                ],
-                // Transition from heatmap to circle layer by zoom level
-                "heatmap-opacity": [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    10,
-                    0,
-                    21,
-                    1
-                ]
-            }
+    map.addLayer({
+        id: "boat-data-heat",
+        type: "heatmap",
+        source: "boat-data",
+        filter: ["==", "layer", "sea bed"],
+        paint: {
+            // Increase the heatmap weight based on temperature
+            // TODO: Make settings for min and max range
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "temperature"],
+                0,
+                0,
+                40,
+                1,
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                10,
+                0,
+                21,
+                1,
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0,
+                "rgba(33,102,172,0)",
+                0.17,
+                "rgb(103,169,207)",
+                0.33,
+                "rgb(209,229,240)",
+                0.67,
+                "rgb(253,219,199)",
+                0.83,
+                "rgb(239,138,98)",
+                1,
+                "rgb(178,24,43)",
+            ],
+            // to create a blur-like effect.
+            // Adjust the heatmap radius by zoom level
+            // TODO: Dynamically change this based on point distances
+            "heatmap-radius": [
+                "interpolate",
+                ["exponential", 2],
+                ["zoom"],
+                10,
+                0,
+                21,
+                6 / 0.037,
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                10,
+                0,
+                21,
+                1,
+            ],
         },
-    );
+    });
 
     // Data Point Layer
-    map.addLayer(
-        {
-            "id": "boat-data-points",
-            "type": "circle",
-            "source": "boat-data",
-            "minzoom": 7,
-            "filter": ["==", "layer", "sea bed"],
-            "paint": {
-                // Size circle radius by temperature and zoom level
-                // https://wiki.openstreetmap.org/wiki/Zoom_levels
-                // https://stackoverflow.com/questions/37599561/drawing-a-circle-with-the-radius-in-miles-meters-with-mapbox-gl-js
-                "circle-radius": [
-                    "interpolate",
-                    ["exponential", 2],
-                    ["zoom"],
-                    10,
-                    0,
-                    21,
-                    0.5 / 0.037
-                ],
-                // Color circle by temperature
-                // TODO: Make settings for min and max range
-                "circle-color": [
-                    "interpolate",
-                    ["linear"],
-                    ["get", "temperature"],
-                    0,
-                    "rgba(33,102,172,0)",
-                    8,
-                    "rgb(103,169,207)",
-                    16,
-                    "rgb(209,229,240)",
-                    24,
-                    "rgb(253,219,199)",
-                    32,
-                    "rgb(239,138,98)",
-                    40,
-                    "rgb(178,24,43)"
-                ],
-                "circle-stroke-color": "white",
-                "circle-stroke-width": 1,
-                // Transition from heatmap to circle layer by zoom level
-                "circle-opacity": [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    10,
-                    0,
-                    21,
-                    1
-                ]
-            }
+    map.addLayer({
+        id: "boat-data-points",
+        type: "circle",
+        source: "boat-data",
+        minzoom: 7,
+        filter: ["==", "layer", "sea bed"],
+        paint: {
+            // Size circle radius by temperature and zoom level
+            // https://wiki.openstreetmap.org/wiki/Zoom_levels
+            // https://stackoverflow.com/questions/37599561/drawing-a-circle-with-the-radius-in-miles-meters-with-mapbox-gl-js
+            "circle-radius": [
+                "interpolate",
+                ["exponential", 2],
+                ["zoom"],
+                10,
+                0,
+                21,
+                0.5 / 0.037,
+            ],
+            // Color circle by temperature
+            // TODO: Make settings for min and max range
+            "circle-color": [
+                "interpolate",
+                ["linear"],
+                ["get", "temperature"],
+                0,
+                "rgba(33,102,172,0)",
+                8,
+                "rgb(103,169,207)",
+                16,
+                "rgb(209,229,240)",
+                24,
+                "rgb(253,219,199)",
+                32,
+                "rgb(239,138,98)",
+                40,
+                "rgb(178,24,43)",
+            ],
+            "circle-stroke-color": "white",
+            "circle-stroke-width": 1,
+            // Transition from heatmap to circle layer by zoom level
+            "circle-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                10,
+                0,
+                21,
+                1,
+            ],
         },
-    );
+    });
 }
 
 /** Updates the data displayed.
