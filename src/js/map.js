@@ -17,7 +17,7 @@ export const map = new maplibregl.Map({
     minZoom: 10,
 });
 
-map.on("error", function(e) {
+map.on("error", function (e) {
     logging.error(String(e.error.message));
 });
 
@@ -37,13 +37,16 @@ export function fit_bounds(coordinates, padding = 50) {
     // result. A variation of this technique could be applied to zooming
     // to the bounds of multiple Points or Polygon geomteries - it just
     // requires wrapping all the coordinates with the extend method.
-    const bounds = coordinates.reduce((bounds, coord) => {
-        return bounds.extend(coord);
-    }, new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+    const bounds = coordinates.reduce(
+        (bounds, coord) => {
+            return bounds.extend(coord);
+        },
+        new maplibregl.LngLatBounds(coordinates[0], coordinates[0]),
+    );
     logging.debug("New Bounds: " + bounds);
 
     map.fitBounds(bounds, {
-        padding: padding
+        padding: padding,
     });
 }
 

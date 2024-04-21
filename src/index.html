@@ -1,153 +1,272 @@
-<!DOCTYPE html>
+<!doctype html>
 <html class="h-full">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="css/style.css" />
+        <script src="js/main.js" type="module"></script>
+    </head>
 
-<head>
-    <meta charset='utf-8'>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/main.js" type="module"></script>
-</head>
-
-<body class="m-0 p-0 h-full">
-    <main class="h-full flex">
-        <div id="map" class="h-full grow"></div>
-        <div class="mx-5 gap-5 flex flex-col">
-            <section id="status-bar">
-                <div class="flex items-center justify-between bg-red-500 text-white p-2">
-                    <div class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="h-4 w-4">
-                            <path
-                                d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z">
-                            </path>
-                        </svg>
-                        <span>Disconnected</span>
+    <body class="m-0 h-full p-0">
+        <main class="flex h-full">
+            <div id="map" class="h-full grow"></div>
+            <div class="mx-5 flex flex-col gap-5">
+                <section id="status-bar">
+                    <div
+                        class="flex items-center justify-between bg-red-500 p-2 text-white"
+                    >
+                        <div class="flex items-center gap-2">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="h-4 w-4"
+                            >
+                                <path
+                                    d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"
+                                ></path>
+                            </svg>
+                            <span>Disconnected</span>
+                        </div>
                     </div>
-                </div>
-            </section>
-            <section class="flex">
-                <label of="import-path"
-                    class="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-blue-500 text-white flex items-center cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="mr-2 h-5 w-5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" x2="12" y1="15" y2="3"></line>
-                    </svg>
-                    Import Path
-                    <input name="import-path" id="import-path"
-                        class="opacity-0 h-0 min-h-0 max-h-0 w-0 min-w-0 max-w-0 m-0" type="file"
-                        accept=".geojson,.json,application/geo+json">
-                </label>
-                <button id="export-path"
-                    class="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-blue-500 text-white flex items-center ml-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="mr-2 h-5 w-5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" x2="12" y1="3" y2="15"></line>
-                    </svg>
-                    Export Path
-                </button>
-            </section>
-            <section class="flex space-x-5">
-                <label of="import-data"
-                    class="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-blue-500 text-white flex items-center cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="mr-2 h-5 w-5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" x2="12" y1="15" y2="3"></line>
-                    </svg>
-                    <input name="import-data" id="import-data"
-                        class="opacity-0 h-0 min-h-0 max-h-0 w-0 min-w-0 max-w-0 m-0" type="file"
-                        accept="text/csv,.csv">
-                    Import Data
-                </label>
-                <button id="export-data"
-                    class="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-blue-500 text-white flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="mr-2 h-5 w-5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" x2="12" y1="3" y2="15"></line>
-                    </svg>
-                    Export Data
-                </button>
-            </section>
-            <section class="flex space-x-4">
-                <label class="justify-center">Display Layer: </label>
-                <select id="display-layer" class="border-2 border-gray-300 rounded-md flex-1">
-                    <option value="surface">Surface</option>
-                    <option value="middle">Middle</option>
-                    <option value="sea bed" selected>Sea Bed</option>
-                </select>
-            </section>
-            <section class="space-y-4">
-                <div class="items-center justify-between space-x-4 flex">
-                    <input min="3" max="10" class="w-1/4 text-center border-2 border-gray-300 rounded-md flex-1"
-                        type="range" value="3" id="interpolate-range" />
-                    <input min="3" max="10" class="w-1/4 text-center border-2 border-gray-300 rounded-md" type="number"
-                        value="3" id="interpolate-number" />
-                </div>
-                <button id="interpolate-button"
-                    class="whitespace-nowrap justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 bg-black text-white flex items-center w-full">Generate
-                    Path</button>
-            </section>
-            <section class="flex justify-end">
-                <button
-                    class="justify-center whitespace-nowrap text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-flex items-center"
-                    id="run-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="h-4 w-4 mr-2">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    <span>Run</span>
-                </button>
-            </section>
-            <section class="mt-auto">
-                <table class="border border-collapse w-full">
-                    <thead>
-                        <tr class="border">
-                            <th class="border">Temperature Range (&deg;C)</th>
-                            <th class="border">Colour</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border">
-                            <td class="border">&le; 7</td>
-                            <td class="border">Transparent</td>
-                        </tr>
-                        <tr class="border">
-                            <td class="border">8 - 15</td>
-                            <td class="border bg-[rgb(103,169,207)] text-[rgb(103,169,207)]">Blue</td>
-                        </tr>
-                        <tr class="border">
-                            <td class="border">16 - 23</td>
-                            <td class="border bg-[rgb(209,229,240)] text-[rgb(209,229,240)]">Light Blue</td>
-                        </tr>
-                        <tr class="border">
-                            <td class="border">24 - 31</td>
-                            <td class="border bg-[rgb(253,219,199)] text-[rgb(253,219,199)]">White/Peach</td>
-                        </tr>
-                        <tr class="border">
-                            <td class="border">32 - 39</td>
-                            <td class="border bg-[rgb(239,138,98)] text-[rgb(239,138,98)]">Orange</td>
-                        </tr>
-                        <tr class="border">
-                            <td class="border">&ge; 40</td>
-                            <td class="border bg-[rgb(178,24,43)] text-[rgb(178,24,43)]">Red</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </div>
-    </main>
-</body>
-
+                </section>
+                <section class="flex">
+                    <label
+                        of="import-path"
+                        class="ring-offset-background focus-visible:ring-ring hover:bg-primary/90 flex h-10 cursor-pointer items-center justify-center whitespace-nowrap rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="mr-2 h-5 w-5"
+                        >
+                            <path
+                                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                            ></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" x2="12" y1="15" y2="3"></line>
+                        </svg>
+                        Import Path
+                        <input
+                            name="import-path"
+                            id="import-path"
+                            class="m-0 h-0 max-h-0 min-h-0 w-0 min-w-0 max-w-0 opacity-0"
+                            type="file"
+                            accept=".geojson,.json,application/geo+json"
+                        />
+                    </label>
+                    <button
+                        id="export-path"
+                        class="ring-offset-background focus-visible:ring-ring hover:bg-primary/90 ml-5 flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="mr-2 h-5 w-5"
+                        >
+                            <path
+                                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                            ></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" x2="12" y1="3" y2="15"></line>
+                        </svg>
+                        Export Path
+                    </button>
+                </section>
+                <section class="flex space-x-5">
+                    <label
+                        of="import-data"
+                        class="ring-offset-background focus-visible:ring-ring hover:bg-primary/90 flex h-10 cursor-pointer items-center justify-center whitespace-nowrap rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="mr-2 h-5 w-5"
+                        >
+                            <path
+                                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                            ></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" x2="12" y1="15" y2="3"></line>
+                        </svg>
+                        <input
+                            name="import-data"
+                            id="import-data"
+                            class="m-0 h-0 max-h-0 min-h-0 w-0 min-w-0 max-w-0 opacity-0"
+                            type="file"
+                            accept="text/csv,.csv"
+                        />
+                        Import Data
+                    </label>
+                    <button
+                        id="export-data"
+                        class="ring-offset-background focus-visible:ring-ring hover:bg-primary/90 flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="mr-2 h-5 w-5"
+                        >
+                            <path
+                                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                            ></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" x2="12" y1="3" y2="15"></line>
+                        </svg>
+                        Export Data
+                    </button>
+                </section>
+                <section class="flex space-x-4">
+                    <label class="justify-center">Display Layer: </label>
+                    <select
+                        id="display-layer"
+                        class="flex-1 rounded-md border-2 border-gray-300"
+                    >
+                        <option value="surface">Surface</option>
+                        <option value="middle">Middle</option>
+                        <option value="sea bed" selected>Sea Bed</option>
+                    </select>
+                </section>
+                <section class="space-y-4">
+                    <div class="flex items-center justify-between space-x-4">
+                        <input
+                            min="3"
+                            max="10"
+                            class="w-1/4 flex-1 rounded-md border-2 border-gray-300 text-center"
+                            type="range"
+                            value="3"
+                            id="interpolate-range"
+                        />
+                        <input
+                            min="3"
+                            max="10"
+                            class="w-1/4 rounded-md border-2 border-gray-300 text-center"
+                            type="number"
+                            value="3"
+                            id="interpolate-number"
+                        />
+                    </div>
+                    <button
+                        id="interpolate-button"
+                        class="ring-offset-background focus-visible:ring-ring hover:bg-primary/90 flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    >
+                        Generate Path
+                    </button>
+                </section>
+                <section class="flex justify-end">
+                    <button
+                        class="ring-offset-background focus-visible:ring-ring inline-flex h-10 items-center justify-center whitespace-nowrap rounded bg-green-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                        id="run-button"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="mr-2 h-4 w-4"
+                        >
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <span>Run</span>
+                    </button>
+                </section>
+                <section class="mt-auto">
+                    <table class="w-full border-collapse border">
+                        <thead>
+                            <tr class="border">
+                                <th class="border">
+                                    Temperature Range (&deg;C)
+                                </th>
+                                <th class="border">Colour</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border">
+                                <td class="border">&le; 7</td>
+                                <td class="border">Transparent</td>
+                            </tr>
+                            <tr class="border">
+                                <td class="border">8 - 15</td>
+                                <td
+                                    class="border bg-[rgb(103,169,207)] text-[rgb(103,169,207)]"
+                                >
+                                    Blue
+                                </td>
+                            </tr>
+                            <tr class="border">
+                                <td class="border">16 - 23</td>
+                                <td
+                                    class="border bg-[rgb(209,229,240)] text-[rgb(209,229,240)]"
+                                >
+                                    Light Blue
+                                </td>
+                            </tr>
+                            <tr class="border">
+                                <td class="border">24 - 31</td>
+                                <td
+                                    class="border bg-[rgb(253,219,199)] text-[rgb(253,219,199)]"
+                                >
+                                    White/Peach
+                                </td>
+                            </tr>
+                            <tr class="border">
+                                <td class="border">32 - 39</td>
+                                <td
+                                    class="border bg-[rgb(239,138,98)] text-[rgb(239,138,98)]"
+                                >
+                                    Orange
+                                </td>
+                            </tr>
+                            <tr class="border">
+                                <td class="border">&ge; 40</td>
+                                <td
+                                    class="border bg-[rgb(178,24,43)] text-[rgb(178,24,43)]"
+                                >
+                                    Red
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </main>
+    </body>
 </html>

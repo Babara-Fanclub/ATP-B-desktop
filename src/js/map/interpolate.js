@@ -29,7 +29,7 @@ function* pairwise(iterable) {
  * @returns{Number} The angle in radians.
  */
 function deg_to_rad(deg) {
-    return deg * Math.PI / 180;
+    return (deg * Math.PI) / 180;
 }
 
 /** Converts a number from radians to degrees.
@@ -38,7 +38,7 @@ function deg_to_rad(deg) {
  * @returns{Number} The angle in degrees.
  */
 function rad_to_deg(rad) {
-    return rad * 180 / Math.PI;
+    return (rad * 180) / Math.PI;
 }
 
 /** Fill in the points with fixed distance between them.
@@ -76,7 +76,8 @@ function interpolate(distance, points) {
 
         logging.info("Calculating Bearing");
         const y = Math.sin(lng2 - lng1) * Math.cos(lat2);
-        const x = Math.cos(lat1) * Math.sin(lat2) -
+        const x =
+            Math.cos(lat1) * Math.sin(lat2) -
             Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
         const brng = Math.atan2(y, x);
         logging.debug(`Bearing: ${brng}`);
@@ -105,11 +106,17 @@ function calculate_destination(from, brng, distance) {
     const lng1 = deg_to_rad(from.lng);
 
     // https://www.movable-type.co.uk/scripts/latlong.html
-    const new_lat = Math.asin(Math.sin(lat1) * Math.cos(distance / R) +
-        Math.cos(lat1) * Math.sin(distance / R) * Math.cos(brng));
-    let new_lng = lng1 + Math.atan2(Math.sin(brng) * Math.sin(distance / R) * Math.cos(lat1),
-        Math.cos(distance / R) - Math.sin(lat1) * Math.sin(new_lat));
-    new_lng = (new_lng + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+    const new_lat = Math.asin(
+        Math.sin(lat1) * Math.cos(distance / R) +
+            Math.cos(lat1) * Math.sin(distance / R) * Math.cos(brng),
+    );
+    let new_lng =
+        lng1 +
+        Math.atan2(
+            Math.sin(brng) * Math.sin(distance / R) * Math.cos(lat1),
+            Math.cos(distance / R) - Math.sin(lat1) * Math.sin(new_lat),
+        );
+    new_lng = ((new_lng + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
 
     return [new_lng, new_lat].map(rad_to_deg);
 }
@@ -121,7 +128,9 @@ function calculate_destination(from, brng, distance) {
  * @returns {Array<[number, number]>} An array with interpolated points.
  * */
 export function interpolate_points(points, distance) {
-    const array = Array.from(pairwise(points)).flatMap(interpolate.bind(null, distance));
+    const array = Array.from(pairwise(points)).flatMap(
+        interpolate.bind(null, distance),
+    );
     logging.info("Adding Back Initial Point");
     array.unshift(points[0]);
     return array;
@@ -210,10 +219,17 @@ if (generate_button === null) {
         const points = path_vars.markers.map((v) => v.getLngLat());
         const new_path = generate_path(points).map((v) => v.toArray());
         logging.debug(`Generated Path: ${JSON.stringify(new_path)}`);
-        path_vars.line_coords.splice(0, path_vars.line_coords.length, ...new_path);
+        path_vars.line_coords.splice(
+            0,
+            path_vars.line_coords.length,
+            ...new_path,
+        );
 
         logging.info("Interpolating Points");
-        const new_values = interpolate_points(path_vars.line_coords, current_distance);
+        const new_values = interpolate_points(
+            path_vars.line_coords,
+            current_distance,
+        );
         path_vars.point_coords.length = new_values.length;
         for (const i in new_values) {
             path_vars.point_coords[i] = new_values[i];

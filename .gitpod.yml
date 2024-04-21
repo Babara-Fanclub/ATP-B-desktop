@@ -15,7 +15,8 @@ vscode:
     - "serayuzgur.crates"
     - "tamasfe.even-better-toml"
     - "rust-lang.rust-analyzer"
-    - "vscodevim.vim"
+    - "bradlc.vscode-tailwindcss"
+    - "esbenp.prettier-vscode"
 
 ports:
   - name: VNC

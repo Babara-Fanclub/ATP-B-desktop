@@ -48,7 +48,10 @@ if (run_button === null) {
 
         try {
             logging.info(`Sending Path to Port ${port}`);
-            await invoke("send_path", { port: port, data: path_vars.path_data });
+            await invoke("send_path", {
+                port: port,
+                data: path_vars.path_data,
+            });
         } catch (e) {
             logging.error(e);
         }
@@ -65,14 +68,14 @@ if (status_bar === null) {
 }
 
 /** The current connected port.
- * 
+ *
  * @type{string}
  */
 let port = null;
 
 async function search_port() {
     /** The available serial ports
-     * 
+     *
      * @type{Array<string>}
      */
     try {

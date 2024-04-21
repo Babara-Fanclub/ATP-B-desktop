@@ -50,24 +50,24 @@ async function read_path() {
     } catch (e) {
         logging.error(String(e));
         path_data = {
-            "type": "FeatureCollection",
-            "version": "0.1.0",
-            "features": [
+            type: "FeatureCollection",
+            version: "0.1.0",
+            features: [
                 {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "MultiPoint",
-                        "coordinates": []
-                    }
+                    type: "Feature",
+                    geometry: {
+                        type: "MultiPoint",
+                        coordinates: [],
+                    },
                 },
                 {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": []
-                    }
-                }
-            ]
+                    type: "Feature",
+                    geometry: {
+                        type: "LineString",
+                        coordinates: [],
+                    },
+                },
+            ],
         };
     }
     line_coords = path_data.features[1].geometry.coordinates;
@@ -89,7 +89,6 @@ export function save_path() {
         return new Promise();
     }
 }
-
 
 /** The main GeoJSON data for the robot. */
 export let path_data = undefined;
@@ -121,36 +120,36 @@ map.once("load", async () => {
 function source_loaded() {
     // Adding path into data source
     map.addSource("path", {
-        "type": "geojson",
-        "data": path_data
+        type: "geojson",
+        data: path_data,
     });
     source = map.getSource("path");
 
     // Path layer
     map.addLayer({
-        "id": "route",
-        "type": "line",
-        "source": "path",
-        "layout": {
+        id: "route",
+        type: "line",
+        source: "path",
+        layout: {
             "line-join": "round",
-            "line-cap": "round"
+            "line-cap": "round",
         },
-        "paint": {
+        paint: {
             "line-color": "#888888",
-            "line-width": 8
+            "line-width": 8,
         },
     });
 
     // Collection point layer
     map.addLayer({
-        "id": "collection-points",
-        "type": "circle",
-        "source": "path",
-        "paint": {
+        id: "collection-points",
+        type: "circle",
+        source: "path",
+        paint: {
             "circle-radius": 6,
-            "circle-color": "#B42222"
+            "circle-color": "#B42222",
         },
-        "filter": ["==", "$type", "Point"]
+        filter: ["==", "$type", "Point"],
     });
 
     redraw_markers();
@@ -170,7 +169,7 @@ function source_loaded() {
     });
 }
 
-/** 
+/**
  * Creates a new marker for the map.
  *
  * @param {import("maplibre-gl").LngLatLike} location - The location of the marker.
@@ -184,7 +183,7 @@ function source_loaded() {
  */
 function create_marker(location) {
     const marker = new Marker({
-        draggable: true
+        draggable: true,
     })
         .setLngLat(location)
         .addTo(map);
@@ -199,7 +198,7 @@ function create_marker(location) {
     return marker;
 }
 
-/** 
+/**
  * Redraws all the markers on the map.
  *
  * This function will mutate the markers variable.
