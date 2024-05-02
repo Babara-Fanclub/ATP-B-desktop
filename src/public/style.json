@@ -13141,8 +13141,8 @@
       ]
     }
   ],
-  "glyphs": "http://localhost:5173/fonts/{fontstack}/{range}.pbf",
-  "sprite": "http://localhost:5173/sprites/sprite",
+  "glyphs": "/fonts/{fontstack}/{range}.pbf",
+  "sprite": "/sprites/sprite",
   "bearing": 0,
   "pitch": 0,
   "center": [
