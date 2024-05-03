@@ -32,12 +32,12 @@ impl PathData {
     pub fn version(&self) -> &str {
         &self.version
     }
-    
+
     /// Gets the path the robot boat is following.
     pub fn path(&self) -> &LineString<f64> {
         &self.path
     }
-    
+
     /// Gets the coordinates to where the data should be collected.
     pub fn collection_points(&self) -> &MultiPoint<f64> {
         &self.collection_points

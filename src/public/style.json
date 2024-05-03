@@ -2,13 +2,6 @@
   "version": 8,
   "id": "openstreetmap",
   "name": "OpenStreetMap",
-  "sources": {
-    "openmaptiles": {
-      "url": "pmtiles://data.pmtiles",
-      "type": "vector",
-      "attribution": "<a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">&copy; MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">&copy; OpenStreetMap contributors</a>"
-    }
-  },
   "layers": [
     {
       "id": "Background",
@@ -13141,8 +13134,6 @@
       ]
     }
   ],
-  "glyphs": "/fonts/{fontstack}/{range}.pbf",
-  "sprite": "/sprites/sprite",
   "bearing": 0,
   "pitch": 0,
   "center": [

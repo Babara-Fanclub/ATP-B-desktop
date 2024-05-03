@@ -4,9 +4,16 @@
 mod comm_proto;
 mod data;
 mod path;
+mod mbtiles;
+
+use std::error::Error;
 
 use tauri::{Manager, State, WindowEvent};
 use tauri_plugin_log::LogTarget;
+
+fn error_to_string<E: Error>(error: E) -> String {
+    error.to_string()
+}
 
 fn main() {
     tauri::Builder::default()
@@ -23,6 +30,7 @@ fn main() {
             data::export_data_csv,
             comm_proto::find_ports,
             comm_proto::send_path,
+            mbtiles::fetch_mbtiles,
         ])
         .plugin(
             tauri_plugin_log::Builder::default()

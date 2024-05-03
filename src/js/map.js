@@ -2,22 +2,37 @@
  * */
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import * as pmtiles from "pmtiles";
+import mbtiles from "./mbtiles";
 import * as logging from "tauri-plugin-log-api";
 
-const protocol = new pmtiles.Protocol();
-maplibregl.addProtocol("pmtiles", protocol.tile);
+// Registering MBTiles Protocol
+maplibregl.addProtocol("mbtiles", mbtiles);
 
 export const map = new maplibregl.Map({
     container: "map",
-    style: "style.json", // stylesheet location
     center: [101.87513, 2.94575], // starting position [lng, lat]
     zoom: 18, // starting zoom
     maxZoom: 21,
-    minZoom: 10,
+    minZoom: 0,
 });
 
-map.on("error", function (e) {
+// Map Style
+async function get_style() {
+    const style = await (await fetch("/style.json")).json();
+    const new_sprite = new URL(window.location.href) + "/sprites/sprite";
+    style.sprite = new_sprite;
+    style.glyphs = "/fonts/{fontstack}/{range}.pbf";
+    style.sources = {
+        openmaptiles: {
+            url: "mbtiles://data.mbtiles",
+            type: "vector",
+        },
+    };
+    map.setStyle(style);
+}
+get_style();
+
+map.on("error", function(e) {
     logging.error(String(e.error.message));
 });
 
