@@ -35,7 +35,7 @@ export default async function mbtiles_protocol(params) {
                 column: x,
                 row: y,
             }),
-        }
+        };
     } catch (e) {
         logging.error(e.toString());
         return { data: [] };
