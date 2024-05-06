@@ -12,15 +12,25 @@ export default async function mbtiles_protocol(params) {
     const db_file = await path.resolveResource(url.host);
 
     if (params.type === "json") {
-        return {
-            data: {
-                tiles: [`${url.href}/{z}/{x}/{y}`],
-                minzoom: 0,
-                maxzoom: 14,
-                scheme: "tms",
-                attribution: "<a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">&copy; MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">&copy; OpenStreetMap contributors</a>",
+        const tiles = [`${url.href}/{z}/{x}/{y}`];
+        try {
+            const tiles_json = await invoke("mbtiles_metadata", { db: db_file });
+            tiles_json.tiles = tiles;
+            return {
+                data: tiles_json
             }
-        };
+        } catch (e) {
+            logging.error(e);
+            return {
+                data: {
+                    tiles: tiles,
+                    minzoom: 0,
+                    maxzoom: 14,
+                    scheme: "tms",
+                    attribution: "<a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">&copy; MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">&copy; OpenStreetMap contributors</a>",
+                }
+            };
+        }
     }
 
     const paths = url.pathname.split("/").map(Number);

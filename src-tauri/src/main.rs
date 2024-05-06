@@ -31,6 +31,7 @@ fn main() {
             comm_proto::find_ports,
             comm_proto::send_path,
             mbtiles::fetch_mbtiles,
+            mbtiles::mbtiles_metadata,
         ])
         .plugin(
             tauri_plugin_log::Builder::default()
