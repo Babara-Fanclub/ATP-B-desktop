@@ -60,6 +60,14 @@ jobs:
           sudo apt install -y libudev-dev
           # Protobuf Packages
           sudo apt install -y protobuf-compiler
+
+      - name: Download Map Data
+        uses: suisei-cn/actions-download-file@818d6b7dc8fe73f2f924b6241f2b1134ca1377d9 # 1.6.0
+        id: downloadfile  # Remember to give an ID if you need the output filename
+        with:
+          url: "${{ secrets.MAP_DATA }}"
+          target: src-tauri/data.mbtiles
+          
       - name: Run Clippy
         run: |
           cd src-tauri/
