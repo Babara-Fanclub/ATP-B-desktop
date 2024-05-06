@@ -1,6 +1,12 @@
 //! Implementations of communication protocol between the boat and desktop application.
 
-use std::{collections::HashMap, fmt::Debug, io::ErrorKind, sync::Mutex, time::Duration};
+use std::{
+    collections::HashMap,
+    fmt::Debug,
+    io::{ErrorKind, Write},
+    sync::Mutex,
+    time::Duration,
+};
 
 use prost::Message;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -304,7 +310,7 @@ impl BoatPort {
             data: packet.encode_to_vec(),
         };
         self.port
-            .write(&data.encode_to_vec())
+            .write(&data.encode_length_delimited_to_vec())
             .map_err(|e| e.to_string())?;
         Ok(())
     }
@@ -420,7 +426,11 @@ pub async fn find_ports(
     }
 
     log::info!("Finding Available Ports");
-    let ports = serialport::available_ports().map_err(|e| e.to_string())?;
+    let mut ports = serialport::available_ports().map_err(|e| e.to_string())?;
+    ports.push(SerialPortInfo {
+        port_name: String::from("/workspace/ttyUSB0"),
+        port_type: serialport::SerialPortType::Unknown,
+    });
     let ports: Vec<SerialPortInfo> = ports
         .into_iter()
         .filter(|v| !boats.contains_key(&v.port_name))
