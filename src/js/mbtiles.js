@@ -4,8 +4,13 @@ import * as logging from "tauri-plugin-log-api";
 
 /** MBTiles Protocol for Maplibre JS.
  *
- * @param {import("maplibre-gl").RequestParameters} params - Paramters for the protocol.
+ * @param {import("maplibre-gl").RequestParameters} params - Request parameters for the tiles.
  * @returns {import("maplibre-gl").GetResourceResponse} The response to the request.
+ *
+ * @example
+ * import * as maplibregl from "maplibre-gl";
+ * import mbtiles from "./mbtiles";
+ * maplibregl.addProtocol("mbtiles", mbtiles);
  */
 export default async function mbtiles_protocol(params) {
     const url = new URL(params.url);
@@ -16,6 +21,7 @@ export default async function mbtiles_protocol(params) {
         try {
             const tiles_json = await invoke("mbtiles_metadata", { db: db_file });
             tiles_json.tiles = tiles;
+            logging.debug("Fetched Metadata: " + JSON.stringify(tiles_json));
             return {
                 data: tiles_json
             };
@@ -38,13 +44,14 @@ export default async function mbtiles_protocol(params) {
     const [z, x, y] = paths;
 
     try {
+        const tile = await invoke("fetch_mbtiles", {
+            db: db_file,
+            zoom: z,
+            column: x,
+            row: y,
+        });
         return {
-            data: await invoke("fetch_mbtiles", {
-                db: db_file,
-                zoom: z,
-                column: x,
-                row: y,
-            }),
+            data: tile,
         };
     } catch (e) {
         logging.error(e.toString());

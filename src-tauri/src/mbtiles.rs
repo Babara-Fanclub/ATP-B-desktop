@@ -6,6 +6,7 @@ use sqlx::Connection;
 
 use crate::error_to_string;
 
+/// Fetches the tile data for the given MBTiles database, zoom level, column, and row.
 #[tauri::command]
 pub async fn fetch_mbtiles(
     db: String,
@@ -34,6 +35,7 @@ pub async fn fetch_mbtiles(
         .map_err(error_to_string)
 }
 
+/// Parse the bounds value of a MBTiles metadata.
 fn parse_bounds(bounds: String) -> Result<serde_json::Value, String> {
     let bounds = bounds.split(',');
 
@@ -52,6 +54,7 @@ fn parse_bounds(bounds: String) -> Result<serde_json::Value, String> {
     }
 }
 
+/// Parse the center value of a MBTiles metadata.
 fn parse_center(center: String) -> Result<serde_json::Value, String> {
     let center = center.split(',');
 
@@ -70,6 +73,7 @@ fn parse_center(center: String) -> Result<serde_json::Value, String> {
     }
 }
 
+/// Parse the metadata value of a MBTiles metadata.
 fn parse_metadata(key: &str, value: String) -> Result<serde_json::Value, String> {
     Ok(match key {
         "name" => serde_json::Value::String(value),
@@ -87,6 +91,7 @@ fn parse_metadata(key: &str, value: String) -> Result<serde_json::Value, String>
     })
 }
 
+/// Retrieves the metadata for the given MBTiles database.
 #[tauri::command]
 pub async fn mbtiles_metadata(db: String) -> Result<HashMap<String, serde_json::Value>, String> {
     let mut con = sqlx::SqliteConnection::connect(&db)
