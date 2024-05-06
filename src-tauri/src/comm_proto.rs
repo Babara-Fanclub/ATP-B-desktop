@@ -3,7 +3,7 @@
 use std::{
     collections::HashMap,
     fmt::Debug,
-    io::{ErrorKind, Write},
+    io::{ErrorKind, Read, Write},
     sync::Mutex,
     time::Duration,
 };
@@ -195,6 +195,8 @@ pub struct BoatPort {
     app_handle: tauri::AppHandle,
     /// The connection status of the port.
     connected: bool,
+    /// Current Data Buffer of the Serial Port.
+    buf: Vec<u8>,
 }
 
 impl Debug for BoatPort {
@@ -220,6 +222,7 @@ impl BoatPort {
             port,
             app_handle,
             connected: true,
+            buf: vec![],
         };
 
         if port.check_connection() {
@@ -354,12 +357,11 @@ impl BoatPort {
             return Err(String::from("Port not Connected"));
         }
 
-        let mut buf = vec![];
-        match self.port.read_to_end(&mut buf) {
+        match self.port.read_to_end(&mut self.buf) {
             Ok(_) => (),
             // Retry if we get a timeout
             Err(e) if e.kind() == ErrorKind::TimedOut => {
-                if buf.is_empty() {
+                if self.buf.is_empty() {
                     return Err(String::from("Nothing is Received"));
                 }
             }
@@ -369,20 +371,31 @@ impl BoatPort {
                 return Err(e.to_string());
             }
         };
-        log::info!("Received Data");
-        log::debug!("Data Received: {:?}", buf);
-        let message = handle_error!(
-            connection::Packet::decode(&*buf),
-            "Received and Invalid Packet"
-        );
-        let packet_type = handle_error!(
-            PacketType::try_from(message.r#type),
-            "Received an Invalid PacketType"
-        );
-        Ok(handle_error!(
-            self.handle_packet(&message.data, packet_type),
-            "Received an Invalid Packet Data"
-        ))
+
+        if let Ok(length) = prost::decode_length_delimiter(&*self.buf) {
+            let size = length + prost::length_delimiter_len(length);
+            if self.buf.len() < size {
+                return self.receive_packet();
+            };
+
+            let data: Vec<u8> = self.buf.drain(..size).collect();
+            log::info!("Received Data");
+            log::debug!("Data Received: {:?}", data);
+            let message = handle_error!(
+                connection::Packet::decode_length_delimited(&*data),
+                "Received and Invalid Packet"
+            );
+            let packet_type = handle_error!(
+                PacketType::try_from(message.r#type),
+                "Received an Invalid PacketType"
+            );
+            Ok(handle_error!(
+                self.handle_packet(&message.data, packet_type),
+                "Received an Invalid Packet Data"
+            ))
+        } else {
+            self.receive_packet()
+        }
     }
 
     /// Gets the name of the port.
@@ -426,11 +439,7 @@ pub async fn find_ports(
     }
 
     log::info!("Finding Available Ports");
-    let mut ports = serialport::available_ports().map_err(|e| e.to_string())?;
-    ports.push(SerialPortInfo {
-        port_name: String::from("/workspace/ttyUSB0"),
-        port_type: serialport::SerialPortType::Unknown,
-    });
+    let ports = serialport::available_ports().map_err(|e| e.to_string())?;
     let ports: Vec<SerialPortInfo> = ports
         .into_iter()
         .filter(|v| !boats.contains_key(&v.port_name))
