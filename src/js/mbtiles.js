@@ -18,7 +18,7 @@ export default async function mbtiles_protocol(params) {
             tiles_json.tiles = tiles;
             return {
                 data: tiles_json
-            }
+            };
         } catch (e) {
             logging.error(e);
             return {
