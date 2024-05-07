@@ -250,6 +250,8 @@ impl BoatPort {
                 return false;
             };
 
+            // Wait for boat to reply
+            std::thread::sleep(Duration::from_millis(200));
             return match self.receive_packet() {
                 Ok(PacketType::Connect) => true,
                 Ok(_) => continue,
@@ -322,6 +324,8 @@ impl BoatPort {
     pub fn send_path(&mut self, data: PathData) -> Result<(), String> {
         for _ in 0..10 {
             self.send_packet(PacketType::PathData.into(), &data)?;
+            // Wait for boat to reply
+            std::thread::sleep(Duration::from_millis(200));
             match self.receive_packet() {
                 Ok(PacketType::Received) => {
                     log::info!("Successfully Sent Path to Boat");
@@ -484,7 +488,7 @@ pub async fn find_ports(
                     }
                 }
                 drop(boats);
-                std::thread::sleep(Duration::from_millis(100));
+                std::thread::sleep(Duration::from_millis(200));
             }
         });
         boats.insert(port.name().to_string(), port);
