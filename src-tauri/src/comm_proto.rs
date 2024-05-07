@@ -400,7 +400,7 @@ impl BoatPort {
                 "Received an Invalid Packet Data"
             ))
         } else {
-            return Err(String::from("Nothing is Received"))
+            Err(String::from("Nothing is Received"))
         }
     }
 
