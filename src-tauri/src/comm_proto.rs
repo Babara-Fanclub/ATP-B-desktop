@@ -393,6 +393,8 @@ impl BoatPort {
                 PacketType::try_from(message.r#type),
                 "Received an Invalid PacketType"
             );
+
+            self.buf.clear();
             Ok(handle_error!(
                 self.handle_packet(&message.data, packet_type),
                 "Received an Invalid Packet Data"
