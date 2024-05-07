@@ -375,7 +375,7 @@ impl BoatPort {
         if let Ok(length) = prost::decode_length_delimiter(&*self.buf) {
             let size = length + prost::length_delimiter_len(length);
             if self.buf.len() < size {
-                return self.receive_packet();
+                return Err(String::from("Nothing is Received"));
             };
 
             let data: Vec<u8> = self.buf.drain(..size).collect();
@@ -394,7 +394,7 @@ impl BoatPort {
                 "Received an Invalid Packet Data"
             ))
         } else {
-            self.receive_packet()
+            return Err(String::from("Nothing is Received"))
         }
     }
 
