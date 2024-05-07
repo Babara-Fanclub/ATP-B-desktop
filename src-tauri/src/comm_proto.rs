@@ -250,6 +250,8 @@ impl BoatPort {
                 return false;
             };
 
+            // Wait for boat to reply
+            std::thread::sleep(Duration::from_millis(200));
             return match self.receive_packet() {
                 Ok(PacketType::Connect) => true,
                 Ok(_) => continue,
@@ -322,6 +324,8 @@ impl BoatPort {
     pub fn send_path(&mut self, data: PathData) -> Result<(), String> {
         for _ in 0..10 {
             self.send_packet(PacketType::PathData.into(), &data)?;
+            // Wait for boat to reply
+            std::thread::sleep(Duration::from_millis(200));
             match self.receive_packet() {
                 Ok(PacketType::Received) => {
                     log::info!("Successfully Sent Path to Boat");
@@ -375,7 +379,7 @@ impl BoatPort {
         if let Ok(length) = prost::decode_length_delimiter(&*self.buf) {
             let size = length + prost::length_delimiter_len(length);
             if self.buf.len() < size {
-                return self.receive_packet();
+                return Err(String::from("Nothing is Received"));
             };
 
             let data: Vec<u8> = self.buf.drain(..size).collect();
@@ -389,12 +393,14 @@ impl BoatPort {
                 PacketType::try_from(message.r#type),
                 "Received an Invalid PacketType"
             );
+
+            self.buf.clear();
             Ok(handle_error!(
                 self.handle_packet(&message.data, packet_type),
                 "Received an Invalid Packet Data"
             ))
         } else {
-            self.receive_packet()
+            Err(String::from("Nothing is Received"))
         }
     }
 
@@ -484,7 +490,7 @@ pub async fn find_ports(
                     }
                 }
                 drop(boats);
-                std::thread::sleep(Duration::from_millis(100));
+                std::thread::sleep(Duration::from_millis(200));
             }
         });
         boats.insert(port.name().to_string(), port);
